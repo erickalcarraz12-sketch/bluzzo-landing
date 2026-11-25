@@ -76,11 +76,11 @@
     if(!CFG.culqiPublicKey){fallback(f);return}
     busy=true;var b=$('#cartPay');b.disabled=true;b.textContent='Abriendo pago…';msg('');pending=f;
     loadCulqi(function(err){
-      if(err||!window.Culqi){fallback(f,'No pudimos cargar el pago. Te abrimos WhatsApp con tu pedido.');return}
+      if(err||!window.Culqi){resetBtn();msg('No se pudo cargar la ventana de pago de Culqi. Si usas Brave u otro bloqueador, desactívalo para este sitio y vuelve a intentar, o usa «Prefiero coordinar por WhatsApp».');return}
       Culqi.publicKey=CFG.culqiPublicKey;
       Culqi.settings({title:'Bluzzo',currency:'PEN',amount:(CFG.precio*qty+shipCost())*100,description:qty+' × '+CFG.producto});
       Culqi.options({lang:'es',modal:true,installments:false,paymentMethods:{tarjeta:true,yape:true,bancaMovil:false,agente:false,billetera:false,cuotealo:false}});
-      Culqi.open();resetBtn();
+      try{Culqi.open()}catch(e){msg('No se pudo abrir el pago ('+(e&&e.message||'error')+'). Prueba de nuevo o coordina por WhatsApp.')}resetBtn();
     });
   }
   function showThanks(s){
