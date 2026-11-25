@@ -29,7 +29,7 @@
       '<form id="cartForm" novalidate><fieldset><legend>Envío</legend>'+z+'</fieldset>'+
       '<fieldset style="margin-top:18px"><legend>Tus datos</legend>'+
       '<label class="f">Nombre completo<input type="text" name="nombre" autocomplete="name" required></label>'+
-      '<div class="g2"><label class="f">Celular / WhatsApp<input type="tel" name="celular" autocomplete="tel" inputmode="tel" required></label><label class="f">Correo (opcional)<input type="email" name="email" autocomplete="email"></label></div>'+
+      '<div class="g2"><label class="f">Celular / WhatsApp<input type="tel" name="celular" autocomplete="tel" inputmode="tel" required></label><label class="f">Correo<input type="email" name="email" autocomplete="email" required></label></div>'+
       '<label class="f">Dirección de entrega<input type="text" name="direccion" autocomplete="street-address" required></label>'+
       '<label class="f">Distrito y ciudad<input type="text" name="ciudad" autocomplete="address-level2"></label>'+
       '<label class="f">Notas (opcional)<textarea name="notas" rows="2"></textarea></label></fieldset></form>';
@@ -41,7 +41,7 @@
   function close(){document.body.classList.remove('cart-open')}
   function msg(t,ok){var m=$('#cartMsg');m.textContent=t||'';m.className='msg'+(ok?' ok':'')}
   function data(){var f={};$$('#cartForm [name]').forEach(function(i){if(i.type!=='radio')f[i.name]=i.value.trim()});return f}
-  function valid(f){if(!f.nombre)return 'Escribe tu nombre.';if((f.celular||'').replace(/\D/g,'').length<9)return 'Escribe un celular válido (9 dígitos).';if(!f.direccion)return 'Escribe tu dirección de entrega.';return ''}
+  function valid(f){if(!f.nombre)return 'Escribe tu nombre.';if((f.celular||'').replace(/\D/g,'').length<9)return 'Escribe un celular válido (9 dígitos).';if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email||''))return 'Escribe un correo válido para tu comprobante.';if(!f.direccion)return 'Escribe tu dirección de entrega.';return ''}
   function waText(f){var t=CFG.envio[zona],tot=CFG.precio*qty+t.costo;
     return 'Hola, quiero separar mi Bluzzo.\n\n• '+qty+' × '+CFG.producto+' (bolígrafo blanco de regalo)\n• Envío: '+t.nombre+' ('+money(t.costo)+')\n• Total: '+money(tot)+'\n\nNombre: '+(f.nombre||'')+'\nCelular: '+(f.celular||'')+'\nDirección: '+(f.direccion||'')+(f.ciudad?', '+f.ciudad:'')+(f.notas?'\nNotas: '+f.notas:'')}
   function toWA(f){window.open('https://wa.me/'+CFG.whatsapp+'?text='+encodeURIComponent(waText(f||data())),'_blank','noopener')}
@@ -59,7 +59,7 @@
     if(Culqi.token){
       var tk=Culqi.token,f=pending||data();
       msg('Confirmando tu pago…',true);try{Culqi.close()}catch(e){}
-      fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:tk.id,email:tk.email,qty:qty,zona:zona,cliente:f})})
+      fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:tk.id,email:tk.email||f.email,qty:qty,zona:zona,cliente:f})})
       .then(function(r){return r.json().catch(function(){return{}}).then(function(d){return{ok:r.ok,d:d}})})
       .then(function(x){
         if(x.ok&&x.d.ok){qty=0;save();render();close();showThanks('ok');resetBtn();return}
@@ -79,7 +79,7 @@
       if(err||!window.Culqi){fallback(f,'No pudimos cargar el pago. Te abrimos WhatsApp con tu pedido.');return}
       Culqi.publicKey=CFG.culqiPublicKey;
       Culqi.settings({title:'Bluzzo',currency:'PEN',amount:(CFG.precio*qty+shipCost())*100,description:qty+' × '+CFG.producto});
-      Culqi.options({lang:'es',modal:true,installments:false,paymentMethods:{tarjeta:true,yape:false,bancaMovil:false,agente:false,billetera:false,cuotealo:false}});
+      Culqi.options({lang:'es',modal:true,installments:false,paymentMethods:{tarjeta:true,yape:true,bancaMovil:false,agente:false,billetera:false,cuotealo:false}});
       Culqi.open();resetBtn();
     });
   }
