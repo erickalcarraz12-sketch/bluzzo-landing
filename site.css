@@ -209,3 +209,7 @@ html,body{overflow-x:clip}
   .hero .sub,.hero p{max-width:100%}
 }
 @media(max-width:600px){.hero .cta{flex-wrap:wrap}.btn{padding-left:20px;padding-right:20px}}
+
+.hero .hcol{container-type:inline-size;min-width:0}
+.hero h1{font-size:min(15cqi,124px)}
+@media(max-width:600px){.hero h1{font-size:min(14.2cqi,64px)}}
