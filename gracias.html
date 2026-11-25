@@ -1,0 +1,39 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>¡Gracias! · Bluzzo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=Reenie+Beanie&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100svh;background:#0038FF;color:#fff;font:17px/1.6 Inter,system-ui,sans-serif;display:grid;place-items:center;padding:24px;
+background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:36px 36px}
+.c{max-width:560px;width:100%}.logo{height:34px;margin-bottom:28px}
+h1{font:700 clamp(54px,12vw,96px)/.92 'Barlow Condensed',sans-serif;text-transform:uppercase;margin:0 0 6px}
+.mano{font:400 38px 'Reenie Beanie',cursive;margin:0 0 18px}.mano svg{display:block;margin-top:-4px}
+.card{background:#fff;color:#031447;border-radius:18px;padding:20px 22px;margin:22px 0}.card b{font-family:'Barlow Condensed',sans-serif;font-size:22px;text-transform:uppercase}
+.row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid #e3e9ff}.row:last-child{border:0}
+.btns{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-block;padding:14px 24px;border-radius:99px;font-weight:600;text-decoration:none;border:0;cursor:pointer;font:inherit;font-weight:600}
+.w{background:#fff;color:#0038FF}.o{border:1.5px solid rgba(255,255,255,.7);color:#fff;background:none}
+.in{animation:up .8s cubic-bezier(.2,.7,.2,1) both}.in:nth-child(2){animation-delay:.1s}.in:nth-child(3){animation-delay:.2s}.in:nth-child(4){animation-delay:.3s}.in:nth-child(5){animation-delay:.4s}
+@keyframes up{from{opacity:0;transform:translateY(18px)}}
+.u path{stroke-dasharray:300;stroke-dashoffset:300;animation:d 1.2s .5s ease forwards}@keyframes d{to{stroke-dashoffset:0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}.u path{stroke-dashoffset:0}}
+</style></head><body><div class="c">
+<img class="logo in" src="img/logo.png" alt="Bluzzo">
+<h1 class="in">¡Pago<br>recibido!</h1>
+<div class="mano in">tu idea ya tiene dónde empezar<svg class="u" width="260" height="12" viewBox="0 0 260 12"><path d="M3 8 C60 2 140 11 257 4" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg></div>
+<div class="card in"><b>Tu reserva</b>
+<div class="row"><span>Referencia</span><strong id="ref">—</strong></div>
+<div class="row"><span>Notebooks</span><strong id="n">—</strong></div>
+<div class="row"><span>Total pagado</span><strong id="t">—</strong></div>
+<div class="row"><span>Entrega estimada</span><strong id="e">—</strong></div>
+<div class="row"><span>Regalo</span><strong>Bolígrafo de gel blanco</strong></div></div>
+<p class="in" id="p">Guarda tu referencia. Escríbenos por WhatsApp para confirmar tu dirección y recibir novedades de tu pedido.</p>
+<div class="btns in"><a class="btn w" id="wa" target="_blank" rel="noopener">Avisar por WhatsApp</a><button class="btn o" id="sh" type="button">Compartir Bluzzo</button><a class="btn o" href="/">Volver al inicio</a></div>
+</div>
+<script>
+var q=new URLSearchParams(location.search),ref=q.get('ref')||'',n=q.get('n')||'',t=q.get('t')||'';
+function s(i,v){document.getElementById(i).textContent=v}
+s('ref',ref||'—');s('n',n||'—');s('t',t?'S/ '+Number(t).toFixed(2):'—');
+fetch('/config.json').then(function(r){return r.json()}).then(function(c){
+ s('e',c.entrega);
+ document.getElementById('wa').href='https://wa.me/'+c.whatsapp+'?text='+encodeURIComponent('Hola, acabo de pagar mi Bluzzo. Referencia: '+ref+(n?' · '+n+' notebook(s)':'')+'. Quedo atento(a) a la coordinación de la entrega.');
+}).catch(function(){});
+document.getElementById('sh').onclick=function(){var d={title:'Bluzzo',text:'Tu idea sobre el blu. Mira este notebook blueprint.',url:location.origin};if(navigator.share)navigator.share(d).catch(function(){});else{navigator.clipboard&&navigator.clipboard.writeText(location.origin);this.textContent='Link copiado'}};
+</script></body></html>

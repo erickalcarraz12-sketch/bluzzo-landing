@@ -1,0 +1,45 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Panel Bluzzo</title>
+<style>
+:root{--az:#0038FF;--ma:#031447;--hi:#EEF2FF}*{box-sizing:border-box}body{margin:0;font:15px/1.5 Inter,system-ui,sans-serif;background:var(--hi);color:var(--ma)}
+header{background:var(--az);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center}header b{font-size:20px}
+main{max-width:1100px;margin:0 auto;padding:20px}.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:18px;box-shadow:0 6px 24px rgba(3,20,71,.07)}
+h2{margin:0 0 12px;font-size:18px}.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}.k{background:#fff;border-radius:14px;padding:16px}.k small{color:#5a6a99}.k b{display:block;font-size:28px}
+table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid #e3e9ff;vertical-align:top}th{color:#5a6a99;font-weight:600}
+input,select,button{font:inherit;padding:9px 12px;border-radius:10px;border:1px solid #c9d5ff}button{background:var(--az);color:#fff;border:0;cursor:pointer;font-weight:600}button.g{background:#fff;color:var(--az);border:1px solid var(--az)}
+.row{display:flex;gap:8px;flex-wrap:wrap}.tag{padding:2px 8px;border-radius:99px;font-size:12px;background:#e3e9ff}.err{color:#c0152f}.scroll{overflow-x:auto}a{color:var(--az)}
+#login{max-width:340px;margin:80px auto}
+</style></head><body>
+<div id="login" class="card"><h2>Panel Bluzzo</h2><div class="row"><input id="pw" type="password" placeholder="Clave" style="flex:1"><button id="go">Entrar</button></div><p id="le" class="err"></p></div>
+<div id="app" hidden>
+<header><b>Bluzzo · pedidos</b><button class="g" id="out">Salir</button></header>
+<main>
+<div class="kpis" id="kpis"></div><br>
+<div class="card"><h2>Pedidos</h2><div class="scroll"><table id="tp"></table></div></div>
+<div class="card"><h2>Códigos de descuento</h2>
+<div class="row" style="margin-bottom:12px"><input id="cc" placeholder="CÓDIGO" size="12"><select id="ct"><option value="porcentaje">% de descuento</option><option value="monto">S/ de descuento</option></select><input id="cv" type="number" placeholder="Valor" style="width:90px"><input id="cm" type="number" placeholder="Usos máx." style="width:100px"><button id="cadd">Crear</button></div>
+<div class="scroll"><table id="tc"></table></div></div>
+<div class="card"><h2>Lista de espera</h2><div class="scroll"><table id="te"></table></div></div>
+</main></div>
+<script>
+var K=sessionStorage.getItem('bk')||'';
+function api(m,b){return fetch('/api/admin',{method:m,headers:{'x-admin-key':K,'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined}).then(function(r){if(r.status===401)throw new Error('clave');if(!r.ok)throw new Error('x');return r.json()})}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function f(d){return new Date(d).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short'})}
+function wa(n,t){return 'https://wa.me/'+(String(n).length<=9?'51':'')+n+(t?'?text='+encodeURIComponent(t):'')}
+function load(){api('GET').then(function(d){
+ document.getElementById('login').hidden=true;document.getElementById('app').hidden=false;
+ var r=d.resumen;document.getElementById('kpis').innerHTML=[['Pedidos',r.pedidos],['Libros',r.libros+' / '+r.cupos],['Cobrado','S/ '+r.total.toFixed(2)],['En espera',d.espera.length]].map(function(x){return '<div class="k"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>'}).join('');
+ document.getElementById('tp').innerHTML='<tr><th>Fecha</th><th>Ref</th><th>Cliente</th><th>Envío</th><th>Cant.</th><th>Total</th><th>Estado</th></tr>'+(d.pedidos.map(function(p){
+  var op=['pagado','enviado','entregado','cancelado'].map(function(e){return '<option'+(e===p.estado?' selected':'')+'>'+e+'</option>'}).join('');
+  return '<tr><td>'+f(p.created_at)+'</td><td>'+esc(p.ref)+'</td><td><b>'+esc(p.nombre)+'</b><br><a href="'+wa(p.celular,'Hola '+p.nombre+', te escribo por tu pedido Bluzzo '+p.ref)+'" target="_blank">'+esc(p.celular)+'</a><br>'+esc(p.email)+'</td><td>'+esc(p.zona)+'<br>'+esc(p.direccion)+', '+esc(p.ciudad)+(p.notas?'<br><i>'+esc(p.notas)+'</i>':'')+'</td><td>'+p.cantidad+(p.codigo?'<br><span class="tag">'+esc(p.codigo)+'</span>':'')+'</td><td>S/ '+Number(p.total).toFixed(2)+'</td><td><select data-id="'+p.id+'">'+op+'</select></td></tr>'}).join('')||'<tr><td colspan="7">Aún no hay pedidos.</td></tr>');
+ document.getElementById('tc').innerHTML='<tr><th>Código</th><th>Descuento</th><th>Usos</th><th></th></tr>'+d.codigos.map(function(c){return '<tr><td><b>'+esc(c.codigo)+'</b></td><td>'+(c.tipo==='porcentaje'?c.valor+'%':'S/ '+c.valor)+'</td><td>'+c.usos+(c.max_usos?' / '+c.max_usos:'')+'</td><td><button class="g" data-c="'+esc(c.codigo)+'" data-a="'+(c.activo?0:1)+'">'+(c.activo?'Desactivar':'Activar')+'</button></td></tr>'}).join('');
+ document.getElementById('te').innerHTML='<tr><th>Fecha</th><th>Contacto</th></tr>'+(d.espera.map(function(e){return '<tr><td>'+f(e.created_at)+'</td><td>'+(e.tipo==='whatsapp'?'<a href="'+wa(e.contacto)+'" target="_blank">'+esc(e.contacto)+'</a>':esc(e.contacto))+' <span class="tag">'+e.tipo+'</span></td></tr>'}).join('')||'<tr><td colspan="2">Nadie en espera.</td></tr>');
+}).catch(function(e){document.getElementById('login').hidden=false;document.getElementById('app').hidden=true;document.getElementById('le').textContent=e.message==='clave'?'Clave incorrecta.':'El panel aún no está configurado.'})}
+document.getElementById('go').onclick=function(){K=document.getElementById('pw').value;sessionStorage.setItem('bk',K);load()};
+document.getElementById('pw').onkeydown=function(e){if(e.key==='Enter')document.getElementById('go').click()};
+document.getElementById('out').onclick=function(){sessionStorage.removeItem('bk');location.reload()};
+document.addEventListener('change',function(e){var i=e.target.getAttribute&&e.target.getAttribute('data-id');if(i)api('POST',{accion:'estado',id:i,estado:e.target.value}).then(load)});
+document.addEventListener('click',function(e){var c=e.target.getAttribute&&e.target.getAttribute('data-c');if(c)api('POST',{accion:'codigo_activo',codigo:c,activo:e.target.getAttribute('data-a')==='1'}).then(load)});
+document.getElementById('cadd').onclick=function(){api('POST',{accion:'codigo',codigo:document.getElementById('cc').value,tipo:document.getElementById('ct').value,valor:document.getElementById('cv').value,max_usos:document.getElementById('cm').value}).then(function(){['cc','cv','cm'].forEach(function(i){document.getElementById(i).value=''});load()})};
+if(K)load();
+</script></body></html>

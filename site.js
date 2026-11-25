@@ -38,6 +38,25 @@
       }
     });
   });
+
+  // nota de la historia: trazos con longitud normalizada
+  $$('.nota svg path').forEach(function(p){p.setAttribute('pathLength','1')});
+  // cupos del primer drop (sin cifras exactas)
+  var cp=$('#cupos');
+  if(cp){fetch('/api/cupos',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){
+    var T={abierto:'Primer drop abierto',llenando:'Se están llenando los cupos',ultimos:'Últimos cupos del primer drop',agotado:'Primer drop agotado'};
+    $('#cupTxt').textContent=T[d.nivel]||T.abierto;cp.hidden=false;
+    cp.classList.toggle('ult',d.nivel==='ultimos');cp.classList.toggle('ago',d.nivel==='agotado');
+    requestAnimationFrame(function(){$('#cupBar').style.width=(d.nivel==='agotado'?100:d.barra)+'%'});
+    if(d.nivel==='agotado'){var pr=$('#prow');if(pr)pr.style.display='none';$$('[data-add]').forEach(function(b){b.style.display='none'});var l=$('#espL');if(l)l.textContent='Se agotó el primer drop. Déjanos tu contacto y te avisamos primero.'}
+  }).catch(function(){})}
+  // lista de espera
+  var ef=$('#espera');
+  if(ef){ef.addEventListener('submit',function(e){e.preventDefault();var i=$('#espIn'),m=$('#espMsg'),v=i.value.trim();if(!v){m.className='';m.textContent='Escribe tu correo o tu WhatsApp.';return}
+    var b=ef.querySelector('button');b.disabled=true;
+    fetch('/api/espera',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contacto:v})}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})}).then(function(x){
+      b.disabled=false;if(x.ok&&x.d.ok){m.className='ok';m.textContent='¡Listo! Te avisaremos del próximo drop.';i.value=''}else{m.className='';m.textContent=(x.d&&x.d.mensaje)||'No pudimos guardarlo. Escríbenos por WhatsApp.'}
+    }).catch(function(){b.disabled=false;m.className='';m.textContent='No pudimos guardarlo. Inténtalo otra vez.'})})}
   // el carrito "responde" al agregar
   var cb=$('.cartbtn');
   if(cb){new MutationObserver(function(){cb.classList.remove('bump');void cb.offsetWidth;cb.classList.add('bump')}).observe($('.cnt',cb),{childList:true,characterData:true,subtree:true})}

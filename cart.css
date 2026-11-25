@@ -55,3 +55,7 @@ body.cart-open{overflow:hidden}
 .thx b{color:#0038FF}
 .thx button{margin-left:10px;border:0;background:#EEF2FF;border-radius:999px;padding:6px 12px;color:#0038FF;font-weight:700;cursor:pointer}
 @media (max-width:520px){.drw .g2{grid-template-columns:1fr}.bar .btn{width:100%;text-align:center}}
+
+.cod{display:flex;gap:8px}.cod input{flex:1;min-width:0;padding:10px 12px;border:1px solid #c9d5ff;border-radius:10px;font:inherit;text-transform:uppercase}.cod button{padding:0 16px;border:1px solid #0038FF;background:#fff;color:#0038FF;border-radius:10px;font:inherit;font-weight:600;cursor:pointer}
+.cm{font-size:13px;color:#c0152f;min-height:0}.cm.ok{color:#0a8a4a}.cm:empty{display:none}.tt.desc{color:#0a8a4a}
+.drw .bd>*{flex-shrink:0}.drw .bd{overflow-y:auto}

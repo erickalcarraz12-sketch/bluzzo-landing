@@ -210,6 +210,16 @@ a{text-decoration:none;color:inherit}
   <figure class="foto" style="margin:0"><img src="img/back.webp" alt="Contraportada del notebook Bluzzo" loading="lazy"></figure>
 </div></section>
 
+<section class="sec hist claro" id="historia"><div class="wrap grid">
+  <div>
+    <h2 class="disp">La historia de Bluzzo.</h2>
+    <p>Todo proyecto empieza en una hoja en blanco. Bluzzo nació de querer un cuaderno que se sintiera como un plano: papel azul, trazo blanco y la libertad de dibujar sin reglas.</p>
+    <p>Lo creó Erick, estudiante de arquitectura en Perú, para quienes piensan en croquis, plantas y garabatos. Cada notebook del primer drop se separa en línea y llega con su bolígrafo blanco.</p>
+    <p class="firma mano">Tu idea sobre el blu.</p>
+  </div>
+  <figure class="nota" data-reveal="nota" aria-hidden="true"><div class="mano">boceto 01</div><svg viewBox="0 0 240 150"><path d="M20 120 L120 40 L220 120 Z M60 120 V80 M180 120 V80 M100 120 V90 H140 V120"/><path d="M20 138 H220 M20 132 V144 M220 132 V144"/></svg><div class="mano">esc. 1:50</div></figure>
+</div></section>
+
 <section class="sec pasos" id="pasos"><div class="wrap">
   <h2 class="disp">Así separas el tuyo.</h2>
   <ol data-reveal="line">
@@ -225,6 +235,7 @@ a{text-decoration:none;color:inherit}
     <p class="lead">Elige cuántos quieres y paga en línea. Tu lugar en el primer drop queda reservado al instante.</p>
     <div class="pagos"><span>Tarjeta</span><span>Yape</span></div>
     <div class="contacto"><a href="https://wa.me/51926410751?text=Hola%2C%20quiero%20separar%20mi%20notebook%20Bluzzo">¿Dudas? Escríbenos por WhatsApp</a><a href="https://www.instagram.com/bluzzo.pe/">@bluzzo.pe</a></div>
+    <form class="espera" id="espera" novalidate><label for="espIn" id="espL">¿Quieres que te avisemos del próximo drop?</label><div><input id="espIn" type="text" placeholder="Tu correo o WhatsApp" autocomplete="email"><button type="submit" class="btn azul">Avísame</button></div><p id="espMsg" role="status"></p></form>
   </div>
   <div class="pcard">
       <div class="disp pn">Bluzzo Blueprint Notebook</div>
@@ -234,7 +245,8 @@ a{text-decoration:none;color:inherit}
         <li>Hojas azules totalmente lisas</li>
         <li class="gift">Bolígrafo de gel blanco de regalo</li>
       </ul>
-      <div class="prow"><div class="stp" aria-label="Cantidad"><button type="button" id="pqm" data-pq="-1" aria-label="Menos">−</button><span id="pq">1</span><button type="button" id="pqp" data-pq="1" aria-label="Más">+</button></div><button type="button" class="btn azul" data-add="picker">Agregar al carrito</button></div>
+      <div class="cupos" id="cupos" hidden><div class="cl" id="cupTxt"></div><div class="cb"><i id="cupBar"></i></div></div>
+      <div class="prow" id="prow"><div class="stp" aria-label="Cantidad"><button type="button" id="pqm" data-pq="-1" aria-label="Menos">−</button><span id="pq">1</span><button type="button" id="pqp" data-pq="1" aria-label="Más">+</button></div><button type="button" class="btn azul" data-add="picker">Agregar al carrito</button></div>
       <div class="sub">Entrega estimada: <span data-entrega>mediados de enero de 2027</span>. Edición limitada, solo por reserva.</div>
   </div>
 </div></section>
@@ -263,7 +275,9 @@ a{text-decoration:none;color:inherit}
   <div class="bd" id="cartBody"></div>
   <footer id="cartFoot" style="display:none">
     <div class="tt"><span>Subtotal</span><span id="tSub"></span></div>
+    <div class="cod"><input id="codeIn" type="text" placeholder="¿Tienes un código?" autocomplete="off" autocapitalize="characters"><button type="button" id="codeBtn">Aplicar</button></div><div class="cm" id="codeMsg"></div>
     <div class="tt"><span>Envío</span><span id="tEnv"></span></div>
+    <div class="tt desc" id="tDescRow" style="display:none"><span id="tDescL">Descuento</span><span id="tDesc"></span></div>
     <div class="tt big"><span>Total</span><span id="tTot"></span></div>
     <div class="msg" id="cartMsg" role="status"></div>
     <button type="button" class="btn pay" id="cartPay">Pagar y reservar</button>

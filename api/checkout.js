@@ -1,6 +1,7 @@
 // Cobra con Culqi. El monto SIEMPRE se calcula aquí (nunca se confía en el navegador).
 // Variable de entorno en Vercel: CULQI_SECRET_KEY (sk_test_... para probar, sk_live_... para cobrar de verdad).
 const cfg = require('../config.json');
+const db = require('./_db');
 
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -23,7 +24,18 @@ module.exports = async (req, res) => {
   if (!token || !email || !(qty >= 1 && qty <= cfg.maxPorPedido) || !zona) return res.status(400).json({ error: 'pedido_invalido' });
   if (!nombre || cel.length < 9 || !dir) return res.status(400).json({ error: 'datos_incompletos' });
 
-  const total = cfg.precio * qty + zona.costo;           // soles
+  const subtotal = cfg.precio * qty;
+  let descuento = 0, codigo = '';
+  if (db.ok()) {
+    try {
+      const vend = await db.vendidos();
+      if (vend + qty > cfg.cuposTotal) return res.status(409).json({ error: 'agotado', mensaje: 'El primer drop se agotó. Únete a la lista de espera.' });
+      const a = await db.aplicarCodigo(b.codigo, subtotal);
+      if (!a.ok) return res.status(400).json({ error: 'codigo', mensaje: a.mensaje });
+      descuento = a.descuento; codigo = a.codigo;
+    } catch (e) { /* si la base falla no bloqueamos la venta */ }
+  }
+  const total = subtotal - descuento + zona.costo;       // soles
   const ref = 'BLZ-' + Date.now().toString(36).toUpperCase();
   const partes = nombre.split(/\s+/);
   const body = {
@@ -33,7 +45,7 @@ module.exports = async (req, res) => {
     source_id: token,
     description: (qty + ' × ' + cfg.producto + ' + envío').slice(0, 80),
     metadata: {
-      ref, cantidad: String(qty), envio: zona.nombre,
+      ref, cantidad: String(qty), envio: zona.nombre, codigo, descuento: String(descuento),
       nombre, celular: cel, direccion: dir,
       ciudad: txt(c.ciudad, 60), notas: txt(c.notas, 150)
     },
@@ -53,7 +65,18 @@ module.exports = async (req, res) => {
       body: JSON.stringify(body)
     });
     const d = await r.json().catch(() => ({}));
-    if (r.ok && d.object === 'charge' && d.id) return res.status(200).json({ ok: true, ref, id: d.id });
+    if (r.ok && d.object === 'charge' && d.id) {
+      if (db.ok()) {
+        try {
+          await db.q('bluzzo_pedidos', { method: 'POST', prefer: 'return=minimal', body: {
+            ref, cantidad: qty, precio_unit: cfg.precio, descuento, envio: zona.costo, total, zona: zona.nombre,
+            nombre, celular: cel, email, direccion: dir, ciudad: txt(c.ciudad, 60), notas: txt(c.notas, 150),
+            codigo: codigo || null, culqi_id: d.id } });
+          if (codigo) { const cu = await db.q('bluzzo_codigos?select=usos&codigo=eq.' + encodeURIComponent(codigo)); if (cu && cu[0]) await db.q('bluzzo_codigos?codigo=eq.' + encodeURIComponent(codigo), { method: 'PATCH', prefer: 'return=minimal', body: { usos: cu[0].usos + 1 } }); }
+        } catch (e) { /* el pago ya está hecho: queda registrado en Culqi con la misma referencia */ }
+      }
+      return res.status(200).json({ ok: true, ref, id: d.id, total, descuento, cantidad: qty });
+    }
     // 3D Secure u otra acción adicional: aún no soportada en esta versión
     if (d && d.action_code) return res.status(402).json({ error: 'requiere_verificacion', mensaje: 'Tu banco pide una verificación adicional. Escríbenos por WhatsApp y te ayudamos.' });
     return res.status(402).json({ error: 'rechazado', mensaje: (d && (d.user_message || d.merchant_message)) || 'No pudimos procesar el pago.' });

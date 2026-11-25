@@ -38,8 +38,8 @@ a{color:inherit;text-decoration:none}
 .hero{position:relative;color:#fff;padding:calc(76px + 28px) 0 72px;overflow:hidden;min-height:min(100svh,920px);display:flex;align-items:center}
 .hero .grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:clamp(16px,3vw,48px);align-items:center;width:100%}
 .hero h1{margin:0;font-size:clamp(60px,8.6vw,124px)}
-.ln{display:block;white-space:nowrap;overflow:hidden;padding:0 .08em .06em 0;margin-bottom:-.06em}
-.ln>span{display:block}
+.hero h1 .ln{display:block;white-space:nowrap;overflow:hidden;padding:0 .08em .06em 0;margin-bottom:-.06em}
+.hero h1 .ln>span{display:block}
 .hero .sub{margin:28px 0 0;font-size:clamp(17px,1.5vw,20px);line-height:1.6;max-width:30em;color:#E8EEFF}
 .hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px;align-items:center}
 .hero .precio{margin-top:26px;display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;color:var(--cota);font-size:15px}
@@ -213,3 +213,26 @@ html,body{overflow-x:clip}
 .hero .hcol{container-type:inline-size;min-width:0}
 .hero h1{font-size:min(15cqi,124px)}
 @media(max-width:600px){.hero h1{font-size:min(14.2cqi,64px)}}
+
+/* historia */
+.hist .grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(28px,6vw,90px);align-items:center}
+.hist h2{margin:0 0 22px;font-size:clamp(44px,6vw,88px);color:var(--marino)}
+.hist p{font-size:18px;line-height:1.7;color:var(--texto);max-width:32em;margin:0 0 16px}
+.hist .firma{font-size:40px;color:var(--azul);margin-top:20px}
+.nota{margin:0;background:var(--azul);border-radius:18px;padding:26px;color:#fff;transform:rotate(2deg);box-shadow:0 30px 60px -24px rgba(0,56,255,.5);
+ background-image:linear-gradient(rgba(255,255,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.12) 1px,transparent 1px);background-size:28px 28px}
+.nota .mano{font-size:34px}.nota svg{width:100%;margin:8px 0;fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nota svg path{stroke-dasharray:1 1;stroke-dashoffset:1}
+.nota.in svg path{stroke-dashoffset:0;transition:stroke-dashoffset 2.2s .2s var(--ease)}
+@keyframes dibuja2{to{stroke-dashoffset:0}}
+@media(max-width:860px){.hist .grid{grid-template-columns:1fr}.nota{transform:none}}
+/* cupos */
+.cupos{margin:0 0 16px}.cupos .cl{font-weight:600;font-size:14px;color:var(--marino);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.cupos .cl::before{content:"";width:8px;height:8px;border-radius:50%;background:#16a34a;animation:pulso 1.8s infinite}
+.cupos.ult .cl::before{background:#e8590c}.cupos.ago .cl::before{background:#c0152f;animation:none}
+.cupos .cb{height:8px;background:#dfe7ff;border-radius:99px;overflow:hidden}.cupos .cb i{display:block;height:100%;width:0;background:var(--azul);border-radius:99px;transition:width 1.4s var(--ease)}
+@keyframes pulso{50%{box-shadow:0 0 0 6px rgba(22,163,74,0)}0%{box-shadow:0 0 0 0 rgba(22,163,74,.5)}}
+/* lista de espera */
+.espera{margin-top:30px;max-width:30em}.espera label{display:block;font-weight:600;color:var(--marino);margin-bottom:10px}
+.espera div{display:flex;gap:8px;flex-wrap:wrap}.espera input{flex:1;min-width:190px;padding:13px 16px;border:1.5px solid #C5D2F8;border-radius:999px;font:inherit;background:#fff}
+.espera input:focus{outline:2px solid var(--azul);outline-offset:1px}.espera p{margin:10px 0 0;font-size:14px;color:#c0152f;min-height:0}.espera p.ok{color:#0a8a4a}.espera p:empty{display:none}
