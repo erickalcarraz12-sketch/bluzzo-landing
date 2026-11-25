@@ -5,7 +5,8 @@
   function ready(){requestAnimationFrame(function(){requestAnimationFrame(function(){b.classList.add('ready')})})}
   if(d.fonts&&d.fonts.ready){var t=setTimeout(ready,900);d.fonts.ready.then(function(){clearTimeout(t);ready()})}else ready();
   // nav sólida al bajar
-  var nav=$('.nav');function onScroll(){nav.classList.toggle('solid',window.scrollY>40)}
+  var nav=$('.nav');function onScroll(){nav.classList.toggle('solid',window.scrollY>40||b.classList.contains('menu-open'))}
+  var mb=$('#menuBtn');if(mb){mb.addEventListener('click',function(){var o=b.classList.toggle('menu-open');mb.setAttribute('aria-expanded',o);onScroll()});$$('#mPanel a').forEach(function(a){a.addEventListener('click',function(){b.classList.remove('menu-open')})})}
   onScroll();addEventListener('scroll',onScroll,{passive:true});
   // revelados (solo fotos, garabato, pasos)
   if('IntersectionObserver' in window){
@@ -18,11 +19,12 @@
       items.forEach(function(li){on.observe(li)});
     }
     // barra inferior: visible fuera del hero y de la zona de compra
-    var bar=$('.bar'),hero=$('.hero'),res=$('#reserva'),vis={hero:true,res:false};
-    function upd(){bar.classList.toggle('on',!vis.hero&&!vis.res)}
-    new IntersectionObserver(function(es){vis.hero=es[0].isIntersecting;upd()}).observe(hero);
-    new IntersectionObserver(function(es){vis.res=es[0].isIntersecting;upd()},{threshold:.25}).observe(res);
-  }else{$$('[data-reveal]').forEach(function(e){e.classList.add('in')});$$('.det li').forEach(function(e){e.classList.add('on')});$('.bar').classList.add('on')}
+    var bar=$('.bar'),hero=$('.hero'),res=$('#reserva'),vis={hero:!!hero,res:false};
+    function upd(){if(bar){var scrolled=hero?true:window.scrollY>500;bar.classList.toggle('on',!vis.hero&&!vis.res&&scrolled)}}
+    if(hero)new IntersectionObserver(function(es){vis.hero=es[0].isIntersecting;upd()}).observe(hero);
+    if(res)new IntersectionObserver(function(es){vis.res=es[0].isIntersecting;upd()},{threshold:.25}).observe(res);
+    if(!hero)addEventListener('scroll',upd,{passive:true});
+  }else{$$('[data-reveal]').forEach(function(e){e.classList.add('in')});$$('.det li').forEach(function(e){e.classList.add('on')});var br=$('.bar');if(br)br.classList.add('on')}
   // FAQ con apertura suave
   $$('.faq details').forEach(function(dt){
     var sm=$('summary',dt),rs=$('.resp',dt);
