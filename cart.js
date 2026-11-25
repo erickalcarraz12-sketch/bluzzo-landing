@@ -19,7 +19,7 @@
     var cb=$('.cartbtn');if(cb){cb.classList.toggle('has',qty>0);$('.cnt',cb).textContent=qty}
     var pq=$('#pq');if(pq){pq.textContent=picker;$('#pqm').disabled=picker<=1;$('#pqp').disabled=picker>=CFG.maxPorPedido}
     var body=$('#cartBody'),foot=$('#cartFoot');if(!body)return;
-    if(!qty){body.innerHTML='<div class="empty"><div class="cond" style="font-size:28px;color:#0038FF;font-weight:700">Tu carrito está vacío</div><p>Agrega tu Bluzzo y recibe un bolígrafo blanco de regalo.</p><a href="#reserva" class="btn" style="background:#0038FF;color:#fff" data-cart-close>Ver el notebook</a></div>';foot.style.display='none';return}
+    if(!qty){body.innerHTML='<div class="empty"><div class="disp" style="font-size:28px;color:#0038FF;font-weight:700">Tu carrito está vacío</div><p>Agrega tu Bluzzo y recibe un bolígrafo blanco de regalo.</p><a href="#reserva" class="btn" style="background:#0038FF;color:#fff" data-cart-close>Ver el notebook</a></div>';foot.style.display='none';return}
     foot.style.display='flex';
     var z='';Object.keys(CFG.envio).forEach(function(k){var e=CFG.envio[k];z+='<label class="zn'+(k===zona?' on':'')+'"><span><input type="radio" name="zona" value="'+k+'"'+(k===zona?' checked':'')+'>'+e.nombre+'</span><b>'+money(e.costo)+'</b></label>'});
     var keep={};$$('#cartForm [name]').forEach(function(i){if(i.type!=='radio')keep[i.name]=i.value});
