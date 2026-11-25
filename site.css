@@ -37,8 +37,8 @@ a{color:inherit;text-decoration:none}
 /* hero */
 .hero{position:relative;color:#fff;padding:calc(76px + 28px) 0 72px;overflow:hidden;min-height:min(100svh,920px);display:flex;align-items:center}
 .hero .grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:clamp(16px,3vw,48px);align-items:center;width:100%}
-.hero h1{margin:0;font-size:clamp(60px,8.6vw,150px)}
-.ln{display:block;white-space:nowrap;overflow:hidden;padding-bottom:.06em;margin-bottom:-.06em}
+.hero h1{margin:0;font-size:clamp(60px,8.6vw,124px)}
+.ln{display:block;white-space:nowrap;overflow:hidden;padding:0 .08em .06em 0;margin-bottom:-.06em}
 .ln>span{display:block}
 .hero .sub{margin:28px 0 0;font-size:clamp(17px,1.5vw,20px);line-height:1.6;max-width:30em;color:#E8EEFF}
 .hero .cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px;align-items:center}
