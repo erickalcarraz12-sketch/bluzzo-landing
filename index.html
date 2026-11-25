@@ -74,6 +74,7 @@ a{text-decoration:none;color:inherit}
 </style>
 
 <style>html{scroll-behavior:smooth}.bar{position:fixed;left:0;right:0;bottom:0;z-index:10;background:#031447;color:#fff;border-top:1px solid rgba(255,255,255,.2)}img{max-width:100%}</style>
+<link rel="stylesheet" href="cart.css">
 </head><body>
 
 
@@ -88,7 +89,7 @@ a{text-decoration:none;color:inherit}
         <a href="#producto">Producto</a>
         <a href="#detalles">Detalles</a>
         <a href="#drop">Primer Drop</a>
-        <a href="#reserva" class="btn" style="background:#fff;color:#0038FF;padding:12px 22px;font-size:15px">Separar</a>
+        <a href="#reserva" class="btn" style="background:#fff;color:#0038FF;padding:12px 22px;font-size:15px">Separar</a><button type="button" class="cartbtn" data-cart-open aria-label="Abrir carrito"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><span class="cnt">0</span></button>
       </div>
     </nav>
     <div style="display:flex;flex-wrap:wrap;gap:48px;align-items:center;padding:48px 0 96px">
@@ -243,13 +244,21 @@ a{text-decoration:none;color:inherit}
 <!-- RESERVA -->
 <section id="reserva" style="background:#EEF2FF">
   <div style="max-width:1200px;margin:0 auto;padding:96px 32px;display:flex;flex-wrap:wrap;gap:48px;align-items:center;justify-content:space-between">
-    <div style="flex:1 1 400px;min-width:0">
+    <div style="flex:1 1 380px;min-width:0">
       <h2 class="cond" style="margin:0;font-size:clamp(44px,6vw,88px);line-height:.95;font-weight:700;color:#0038FF">Separa tu notebook.</h2>
-      <p style="margin:20px 0 0;font-size:18px;line-height:1.6;color:#2B3A66;max-width:460px">Precio del primer drop: S/ [TU PRECIO]. Reserva con tu pago y recibe novedades antes que nadie.</p>
+      <p style="margin:20px 0 0;font-size:18px;line-height:1.6;color:#2B3A66;max-width:460px">Elige cuántos quieres, paga en línea y reserva tu lugar en el primer drop. Cada notebook llega con un bolígrafo de gel blanco de regalo.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:18px;margin-top:22px;font-size:15px;font-weight:600"><a href="https://wa.me/51926410751?text=Hola%2C%20quiero%20separar%20mi%20notebook%20Bluzzo" style="color:#0038FF;text-decoration:underline">¿Dudas? Escríbenos por WhatsApp</a><a href="https://www.instagram.com/bluzzo.pe/" style="color:#0038FF;text-decoration:underline">@bluzzo.pe</a></div>
     </div>
-    <div style="flex:1 1 320px;min-width:0;display:flex;flex-direction:column;gap:14px;max-width:440px">
-      <a href="https://wa.me/51926410751?text=Hola%2C%20quiero%20separar%20mi%20notebook%20Bluzzo" class="btn" style="background:#0038FF;color:#fff;text-align:center">Reservar por WhatsApp</a>
-      <a href="https://www.instagram.com/bluzzo.pe/" class="btn" style="border:1.5px solid #0038FF;color:#0038FF;text-align:center">Escribir por Instagram</a>
+    <div class="pcard" style="flex:1 1 320px;min-width:0;max-width:440px">
+      <div class="cond pn">Bluzzo Blueprint Notebook</div>
+      <div class="cond pp" data-price>S/ 79</div>
+      <ul>
+        <li>Tapa dura A5 en azul real</li>
+        <li>Hojas azules totalmente lisas</li>
+        <li class="gift">Bolígrafo de gel blanco de regalo</li>
+      </ul>
+      <div class="prow"><div class="stp" aria-label="Cantidad"><button type="button" id="pqm" data-pq="-1" aria-label="Menos">−</button><span id="pq">1</span><button type="button" id="pqp" data-pq="1" aria-label="Más">+</button></div><button type="button" class="btn" style="background:#0038FF;color:#fff" data-add="picker">Agregar al carrito</button></div>
+      <div class="sub">Entrega estimada: <span data-entrega>mediados de enero de 2027</span>. Edición limitada, solo por reserva.</div>
     </div>
   </div>
 </section>
@@ -258,10 +267,10 @@ a{text-decoration:none;color:inherit}
 <section style="background:#fff">
   <div style="max-width:880px;margin:0 auto;padding:96px 32px">
     <h2 class="cond" style="margin:0 0 32px;font-size:clamp(40px,5vw,64px);font-weight:700;line-height:1">Preguntas frecuentes</h2>
-    <div style="border-top:1px solid #D5DDF5;padding:22px 0"><div class="cond" style="font-size:24px;font-weight:600">¿Cuándo se entrega?</div><div style="font-size:16px;line-height:1.6;color:#2B3A66;margin-top:6px">[TU FECHA DE ENTREGA]. Te avisamos por mensaje en cuanto el primer drop esté listo.</div></div>
-    <div style="border-top:1px solid #D5DDF5;padding:22px 0"><div class="cond" style="font-size:24px;font-weight:600">¿Cómo separo el mío?</div><div style="font-size:16px;line-height:1.6;color:#2B3A66;margin-top:6px">Escríbenos por WhatsApp o Instagram y confirma tu reserva con el pago.</div></div>
-    <div style="border-top:1px solid #D5DDF5;padding:22px 0"><div class="cond" style="font-size:24px;font-weight:600">¿Hacen envíos?</div><div style="font-size:16px;line-height:1.6;color:#2B3A66;margin-top:6px">[TUS ZONAS Y COSTOS DE ENVÍO]</div></div>
-    <div style="border-top:1px solid #D5DDF5;border-bottom:1px solid #D5DDF5;padding:22px 0"><div class="cond" style="font-size:24px;font-weight:600">¿Qué incluye?</div><div style="font-size:16px;line-height:1.6;color:#2B3A66;margin-top:6px">El notebook A5 de tapa dura con hojas azules, elástico, portalápiz y lapicero de gel blanco.</div></div>
+    <div style="border-top:1px solid #D5DDF5;padding:22px 0"><div class="cond" style="font-size:24px;font-weight:600">¿Cuándo se entrega?</div><div style="font-size:16px;line-height:1.6;color:#2B3A66;margin-top:6px">Entrega estimada: <span data-entrega>mediados de enero de 2027</span>. Te avisamos por mensaje en cuanto el primer drop esté listo.</div></div>
+    <div style="border-top:1px solid #D5DDF5;padding:22px 0"><div class="cond" style="font-size:24px;font-weight:600">¿Cómo separo el mío?</div><div style="font-size:16px;line-height:1.6;color:#2B3A66;margin-top:6px">Agrega tu notebook al carrito, completa tus datos de entrega y paga en línea. Si prefieres, también puedes escribirnos por WhatsApp.</div></div>
+    <div style="border-top:1px solid #D5DDF5;padding:22px 0"><div class="cond" style="font-size:24px;font-weight:600">¿Hacen envíos?</div><div style="font-size:16px;line-height:1.6;color:#2B3A66;margin-top:6px">Sí, a todo el Perú. Lima Metropolitana <span data-envio-lima>S/ 10</span> y provincias <span data-envio-prov>S/ 18</span> por agencia.</div></div>
+    <div style="border-top:1px solid #D5DDF5;border-bottom:1px solid #D5DDF5;padding:22px 0"><div class="cond" style="font-size:24px;font-weight:600">¿Qué incluye?</div><div style="font-size:16px;line-height:1.6;color:#2B3A66;margin-top:6px">El notebook A5 de tapa dura con hojas azules, elástico, portalápiz y bolígrafo de gel blanco de regalo.</div></div>
   </div>
 </section>
 
@@ -277,7 +286,21 @@ a{text-decoration:none;color:inherit}
 </footer>
 
 </div>
-<div class="bar"><div style="max-width:1200px;margin:0 auto;padding:14px 32px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between"><div><div class="cond" style="font-size:20px;font-weight:600">Primer Drop · S/ [TU PRECIO]</div><div style="font-size:13px;color:#B9C4E6">Edición limitada, solo por reserva</div></div><a href="#reserva" class="btn" style="background:#0038FF;color:#fff;padding:12px 24px;font-size:15px">Separar mi notebook</a></div></div>
+<div class="bar"><div style="max-width:1200px;margin:0 auto;padding:14px 32px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between"><div><div class="cond" style="font-size:20px;font-weight:600">Primer Drop · <span data-price>S/ 79</span></div><div style="font-size:13px;color:#B9C4E6">Edición limitada, solo por reserva</div></div><button type="button" class="btn" data-add="one" style="background:#0038FF;color:#fff;padding:12px 24px;font-size:15px;border:0;cursor:pointer;font-family:inherit">Agregar al carrito</button></div></div>
+<div class="ovl" data-cart-close></div>
+<aside class="drw" aria-label="Carrito de compras" role="dialog" aria-modal="true">
+  <header><h3 class="cond">Tu carrito</h3><button type="button" class="x" data-cart-close aria-label="Cerrar">×</button></header>
+  <div class="bd" id="cartBody"></div>
+  <footer id="cartFoot" style="display:none">
+    <div class="tt"><span>Subtotal</span><span id="tSub"></span></div>
+    <div class="tt"><span>Envío</span><span id="tEnv"></span></div>
+    <div class="tt big"><span>Total</span><span id="tTot"></span></div>
+    <div class="msg" id="cartMsg" role="status"></div>
+    <button type="button" class="btn pay" id="cartPay">Pagar y reservar</button>
+    <button type="button" class="wa" id="cartWA">Prefiero coordinar por WhatsApp</button>
+  </footer>
+</aside>
+<script src="cart.js"></script>
 <script>
 (function(){
   var stage=document.getElementById('stage');if(!stage)return;
