@@ -3,9 +3,16 @@
   "precio": 79,
   "maxPorPedido": 5,
   "envio": {
-    "lima": { "nombre": "Lima Metropolitana", "costo": 10 },
-    "provincia": { "nombre": "Provincias (agencia)", "costo": 18 }
+    "lima": {
+      "nombre": "Lima Metropolitana",
+      "costo": 10
+    },
+    "provincia": {
+      "nombre": "Provincias (agencia)",
+      "costo": 18
+    }
   },
   "entrega": "mediados de enero de 2027",
-  "whatsapp": "51926410751"
+  "whatsapp": "51926410751",
+  "culqiPublicKey": ""
 }

@@ -1,47 +1,62 @@
-// Crea el pago en Mercado Pago. El precio SIEMPRE se calcula aquí (no se confía en el navegador).
-// Variables de entorno en Vercel: MP_ACCESS_TOKEN (obligatoria para cobrar), SITE_URL (opcional).
+// Cobra con Culqi. El monto SIEMPRE se calcula aquí (nunca se confía en el navegador).
+// Variable de entorno en Vercel: CULQI_SECRET_KEY (sk_test_... para probar, sk_live_... para cobrar de verdad).
 const cfg = require('../config.json');
 
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') return res.status(405).json({ error: 'method' });
-  const token = process.env.MP_ACCESS_TOKEN;
-  if (!token) return res.status(501).json({ error: 'pago_no_configurado' });
+  const sk = process.env.CULQI_SECRET_KEY;
+  if (!sk) return res.status(501).json({ error: 'pago_no_configurado' });
 
   let b = req.body;
   if (typeof b === 'string') { try { b = JSON.parse(b); } catch (e) { b = {}; } }
   b = b || {};
+  const txt = (v, n) => String(v || '').trim().slice(0, n);
   const qty = parseInt(b.qty, 10);
   const zona = cfg.envio[b.zona];
   const c = b.cliente || {};
-  const txt = (v, n) => String(v || '').trim().slice(0, n);
-  if (!(qty >= 1 && qty <= cfg.maxPorPedido) || !zona) return res.status(400).json({ error: 'pedido_invalido' });
-  const nombre = txt(c.nombre, 80), cel = txt(c.celular, 20), dir = txt(c.direccion, 160);
-  if (!nombre || cel.replace(/\D/g, '').length < 9 || !dir) return res.status(400).json({ error: 'datos_incompletos' });
+  const token = txt(b.token, 60);
+  const email = txt(b.email || c.email, 100);
+  const nombre = txt(c.nombre, 80);
+  const cel = txt(c.celular, 20).replace(/\D/g, '');
+  const dir = txt(c.direccion, 100);
+  if (!token || !email || !(qty >= 1 && qty <= cfg.maxPorPedido) || !zona) return res.status(400).json({ error: 'pedido_invalido' });
+  if (!nombre || cel.length < 9 || !dir) return res.status(400).json({ error: 'datos_incompletos' });
 
-  const site = (process.env.SITE_URL || ('https://' + (req.headers['x-forwarded-host'] || req.headers.host))).replace(/\/$/, '');
+  const total = cfg.precio * qty + zona.costo;           // soles
   const ref = 'BLZ-' + Date.now().toString(36).toUpperCase();
-  const pref = {
-    items: [
-      { id: 'bluzzo-a5', title: cfg.producto + ' (incluye bolígrafo blanco de regalo)', quantity: qty, unit_price: cfg.precio, currency_id: 'PEN' },
-      { id: 'envio', title: 'Envío · ' + zona.nombre, quantity: 1, unit_price: zona.costo, currency_id: 'PEN' }
-    ],
-    payer: { name: nombre, email: txt(c.email, 120) || undefined, phone: { number: cel.replace(/\D/g, '') } },
-    external_reference: ref,
-    statement_descriptor: 'BLUZZO',
-    metadata: { direccion: dir, ciudad: txt(c.ciudad, 80), notas: txt(c.notas, 200), zona: b.zona, qty },
-    back_urls: { success: site + '/?pago=ok&ref=' + ref, pending: site + '/?pago=pendiente&ref=' + ref, failure: site + '/?pago=error' },
-    auto_return: 'approved'
+  const partes = nombre.split(/\s+/);
+  const body = {
+    amount: Math.round(total * 100),                      // Culqi pide céntimos
+    currency_code: 'PEN',
+    email,
+    source_id: token,
+    description: (qty + ' × ' + cfg.producto + ' + envío').slice(0, 80),
+    metadata: {
+      ref, cantidad: String(qty), envio: zona.nombre,
+      nombre, celular: cel, direccion: dir,
+      ciudad: txt(c.ciudad, 60), notas: txt(c.notas, 150)
+    },
+    antifraud_details: {
+      first_name: partes[0].slice(0, 50),
+      last_name: (partes.slice(1).join(' ') || partes[0]).slice(0, 50),
+      address: dir.length >= 5 ? dir : dir + '     ',
+      address_city: (txt(c.ciudad, 30) || 'Lima').padEnd(2, ' '),
+      country_code: 'PE',
+      phone_number: cel.slice(0, 15)
+    }
   };
   try {
-    const r = await fetch('https://api.mercadopago.com/checkout/preferences', {
+    const r = await fetch('https://api.culqi.com/v2/charges', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-      body: JSON.stringify(pref)
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + sk },
+      body: JSON.stringify(body)
     });
-    const d = await r.json();
-    if (!r.ok || !d.init_point) return res.status(502).json({ error: 'pasarela', detalle: d.message || null });
-    return res.status(200).json({ url: d.init_point, ref });
+    const d = await r.json().catch(() => ({}));
+    if (r.ok && d.object === 'charge' && d.id) return res.status(200).json({ ok: true, ref, id: d.id });
+    // 3D Secure u otra acción adicional: aún no soportada en esta versión
+    if (d && d.action_code) return res.status(402).json({ error: 'requiere_verificacion', mensaje: 'Tu banco pide una verificación adicional. Escríbenos por WhatsApp y te ayudamos.' });
+    return res.status(402).json({ error: 'rechazado', mensaje: (d && (d.user_message || d.merchant_message)) || 'No pudimos procesar el pago.' });
   } catch (e) {
     return res.status(502).json({ error: 'pasarela' });
   }

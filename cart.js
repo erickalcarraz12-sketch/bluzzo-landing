@@ -1,7 +1,7 @@
 (function(){
   var CFG={producto:'Bluzzo Blueprint Notebook A5',precio:79,maxPorPedido:5,
     envio:{lima:{nombre:'Lima Metropolitana',costo:10},provincia:{nombre:'Provincias (agencia)',costo:18}},
-    entrega:'mediados de enero de 2027',whatsapp:'51926410751'};
+    entrega:'mediados de enero de 2027',whatsapp:'51926410751',culqiPublicKey:''};
   var KEY='bluzzo_cart_v1',qty=0,zona='lima',busy=false;
   var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
   function load(){try{var d=JSON.parse(localStorage.getItem(KEY)||'{}');qty=Math.max(0,Math.min(CFG.maxPorPedido,parseInt(d.qty,10)||0));if(CFG.envio[d.zona])zona=d.zona}catch(e){}}
@@ -45,24 +45,48 @@
   function waText(f){var t=CFG.envio[zona],tot=CFG.precio*qty+t.costo;
     return 'Hola, quiero separar mi Bluzzo.\n\n• '+qty+' × '+CFG.producto+' (bolígrafo blanco de regalo)\n• Envío: '+t.nombre+' ('+money(t.costo)+')\n• Total: '+money(tot)+'\n\nNombre: '+(f.nombre||'')+'\nCelular: '+(f.celular||'')+'\nDirección: '+(f.direccion||'')+(f.ciudad?', '+f.ciudad:'')+(f.notas?'\nNotas: '+f.notas:'')}
   function toWA(f){window.open('https://wa.me/'+CFG.whatsapp+'?text='+encodeURIComponent(waText(f||data())),'_blank','noopener')}
+  var culqiReady=false;
+  function loadCulqi(cb){
+    if(window.Culqi){cb();return}
+    var sc=document.createElement('script');sc.src='https://js.culqi.com/checkout-js';sc.onload=cb;
+    sc.onerror=function(){cb(new Error('load'))};document.head.appendChild(sc);
+  }
+  function resetBtn(){busy=false;var b=$('#cartPay');if(b){b.disabled=false;b.textContent='Pagar y reservar'}}
+  function fallback(f,t){resetBtn();msg(t||'El pago en línea todavía no está activo. Te abrimos WhatsApp con tu pedido para coordinar el pago.',true);toWA(f)}
+  var pending=null;
+  window.culqi=function(){
+    if(!window.Culqi)return;
+    if(Culqi.token){
+      var tk=Culqi.token,f=pending||data();
+      msg('Confirmando tu pago…',true);try{Culqi.close()}catch(e){}
+      fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:tk.id,email:tk.email,qty:qty,zona:zona,cliente:f})})
+      .then(function(r){return r.json().catch(function(){return{}}).then(function(d){return{ok:r.ok,d:d}})})
+      .then(function(x){
+        if(x.ok&&x.d.ok){qty=0;save();render();close();showThanks('ok');resetBtn();return}
+        resetBtn();
+        if(x.d&&x.d.error==='pago_no_configurado'){fallback(f);return}
+        msg((x.d&&x.d.mensaje)||'No pudimos procesar el pago. Revisa tus datos o escríbenos por WhatsApp.')})
+      .catch(function(){resetBtn();msg('No pudimos confirmar el pago. Si te cobraron, escríbenos por WhatsApp.')});
+    }else if(Culqi.error){
+      resetBtn();msg(Culqi.error.user_message||'No se pudo procesar la tarjeta.');
+    }
+  };
   function pay(){
     if(busy||!qty)return;var f=data(),e=valid(f);if(e){msg(e);return}
-    busy=true;var b=$('#cartPay');b.disabled=true;b.textContent='Procesando…';msg('');
-    fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({qty:qty,zona:zona,cliente:f})})
-    .then(function(r){return r.json().catch(function(){return{}}).then(function(d){return{ok:r.ok,d:d}})})
-    .then(function(x){
-      if(x.ok&&x.d.url){location.href=x.d.url;return}
-      busy=false;b.disabled=false;b.textContent='Pagar y reservar';
-      if(x.d&&x.d.error==='datos_incompletos'||x.d&&x.d.error==='pedido_invalido'){msg('Revisa tus datos e inténtalo de nuevo.');return}
-      msg('El pago en línea todavía no está activo. Te abrimos WhatsApp con tu pedido para coordinar el pago.',true);toWA(f)})
-    .catch(function(){busy=false;b.disabled=false;b.textContent='Pagar y reservar';msg('No pudimos conectar con el pago. Te abrimos WhatsApp con tu pedido.',true);toWA(f)});
+    if(!CFG.culqiPublicKey){fallback(f);return}
+    busy=true;var b=$('#cartPay');b.disabled=true;b.textContent='Abriendo pago…';msg('');pending=f;
+    loadCulqi(function(err){
+      if(err||!window.Culqi){fallback(f,'No pudimos cargar el pago. Te abrimos WhatsApp con tu pedido.');return}
+      Culqi.publicKey=CFG.culqiPublicKey;
+      Culqi.settings({title:'Bluzzo',currency:'PEN',amount:(CFG.precio*qty+shipCost())*100,description:qty+' × '+CFG.producto});
+      Culqi.options({lang:'es',modal:true,installments:false,paymentMethods:{tarjeta:true,yape:false,bancaMovil:false,agente:false,billetera:false,cuotealo:false}});
+      Culqi.open();resetBtn();
+    });
   }
-  function thanks(){
-    var p=new URLSearchParams(location.search),s=p.get('pago');if(!s)return;
-    var t={ok:'<b>¡Pago recibido!</b> Tu notebook Bluzzo quedó reservado. Te escribimos por WhatsApp para coordinar la entrega.',pendiente:'<b>Pago pendiente.</b> Apenas se confirme, tu reserva queda lista y te avisamos.',error:'<b>No se completó el pago.</b> Puedes intentarlo de nuevo desde el carrito.'}[s];
-    if(!t)return;if(s==='ok'){qty=0;save()}
+  function showThanks(s){
+    var t={ok:'<b>¡Pago recibido!</b> Tu notebook Bluzzo quedó reservado. Te escribimos por WhatsApp para coordinar la entrega.'}[s];if(!t)return;
     var d=document.createElement('div');d.className='thx';d.innerHTML=t+'<button type="button">Cerrar</button>';document.body.appendChild(d);
-    d.querySelector('button').onclick=function(){d.remove()};try{history.replaceState(null,'',location.pathname)}catch(e){}
+    d.querySelector('button').onclick=function(){d.remove()};
   }
   document.addEventListener('click',function(ev){
     var t=ev.target.closest('[data-cart-open],[data-cart-close],[data-q],[data-pq],[data-add],#cartPay,#cartWA');if(!t)return;
@@ -77,6 +101,6 @@
   document.addEventListener('change',function(ev){if(ev.target.name==='zona'){zona=ev.target.value;save();render()}});
   document.addEventListener('keydown',function(ev){if(ev.key==='Escape')close()});
   document.addEventListener('submit',function(ev){ev.preventDefault();pay()});
-  fetch('/config.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(c){CFG=c}).catch(function(){}).then(function(){load();fillStatic();render();thanks()});
+  fetch('/config.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(c){CFG=c}).catch(function(){}).then(function(){load();fillStatic();render()});
   load();fillStatic();render();
 })();
