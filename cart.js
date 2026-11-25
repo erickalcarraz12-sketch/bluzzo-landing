@@ -48,7 +48,7 @@
   var culqiReady=false;
   function loadCulqi(cb){
     if(window.Culqi){cb();return}
-    var sc=document.createElement('script');sc.src='https://checkout.culqi.com/js/v4';sc.onload=cb;
+    var sc=document.createElement('script');sc.src='https://checkout.culqi.com/js/v4';sc.onload=function(){cb()};
     sc.onerror=function(){cb(new Error('load'))};document.head.appendChild(sc);
   }
   function resetBtn(){busy=false;var b=$('#cartPay');if(b){b.disabled=false;b.textContent='Pagar y reservar'}}
