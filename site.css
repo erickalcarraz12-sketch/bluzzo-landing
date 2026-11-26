@@ -229,7 +229,7 @@ html,body{overflow-x:clip}
 /* cupos */
 .cupos{margin:0 0 16px}.cupos .cl{font-weight:600;font-size:14px;color:var(--marino);margin-bottom:8px;display:flex;align-items:center;gap:8px}
 .cupos .cl::before{content:"";width:8px;height:8px;border-radius:50%;background:#16a34a;animation:pulso 1.8s infinite}
-.cupos.ult .cl::before{background:#e8590c}.cupos.ago .cl::before{background:#c0152f;animation:none}
+.cupos.ult .cl::before{background:#e8590c}.cupos.ago .cl::before{background:#c0152f;animation:none}.cupos.pro .cl::before{background:#0038FF;animation:none}
 .cupos .cb{height:8px;background:#dfe7ff;border-radius:99px;overflow:hidden}.cupos .cb i{display:block;height:100%;width:0;background:var(--azul);border-radius:99px;transition:width 1.4s var(--ease)}
 @keyframes pulso{50%{box-shadow:0 0 0 6px rgba(22,163,74,0)}0%{box-shadow:0 0 0 0 rgba(22,163,74,.5)}}
 /* lista de espera */

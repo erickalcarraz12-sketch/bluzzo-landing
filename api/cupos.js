@@ -5,12 +5,14 @@ module.exports = async (req, res) => {
   let pct = 0, dr = { n: 1, cupos: cfg.cuposTotal, pausado: false };
   try { if (db.ok()) { dr = await db.drop(); pct = Math.min(1, (await db.vendidos(dr.n)) / dr.cupos); } } catch (e) {}
   if (dr.pausado) pct = 1;
-  const nivel = pct >= 1 ? 'agotado' : pct >= 0.75 ? 'ultimos' : pct >= 0.4 ? 'llenando' : 'abierto';
+  const nivel = dr.pausado ? 'pronto' : pct >= 1 ? 'agotado' : pct >= 0.75 ? 'ultimos' : pct >= 0.4 ? 'llenando' : 'abierto';
   // el ancho de la barra es aproximado a propósito (nunca baja de 12%)
-  const hay = nivel !== 'agotado';
+  const hay = nivel !== 'agotado' && nivel !== 'pronto';
   const site = cfg.siteUrl || '';
   // Campos pensados para un bot de Instagram: respuesta clara y mensaje listo para decir (sin cifras exactas de cupos)
-  const mensaje = !hay
+  const mensaje = nivel === 'pronto'
+    ? 'Nuevo drop de Bluzzo pronto. Por ahora no se puede reservar. Deja tu correo o WhatsApp en ' + site + ' y te avisamos primero cuando abra.'
+    : !hay
     ? 'El drop ' + dr.n + ' de Bluzzo ya se agotó. Puedes dejar tu correo o WhatsApp en ' + site + ' para que te avisemos del próximo drop.'
     : (nivel === 'ultimos' ? 'Sí, aún hay cupos del drop ' + dr.n + ', pero quedan pocos. ' : 'Sí, aún hay cupos del drop ' + dr.n + '. ')
       + 'Puedes reservar el tuyo en ' + site + (dr.entrega ? ' (entrega estimada: ' + dr.entrega + ')' : '') + '.';

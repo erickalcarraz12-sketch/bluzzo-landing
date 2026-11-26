@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
   if (!nombre || cel.length < 9 || !dir) return res.status(400).json({ error: 'datos_incompletos' });
 
   const subtotal = db.subtotalD(dr, qty);
-  if (dr.pausado) return res.status(409).json({ error: 'agotado', mensaje: 'Las reservas están cerradas por ahora. Únete a la lista de espera.' });
+  if (dr.pausado) return res.status(409).json({ error: 'agotado', mensaje: 'Nuevo drop pronto: por ahora no se puede reservar. Déjanos tu correo y te avisamos primero.' });
   let descuento = 0, codigo = '', vend = null;
   if (db.ok()) {
     try {

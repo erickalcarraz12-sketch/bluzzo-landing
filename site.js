@@ -46,14 +46,14 @@
   // cupos del primer drop (sin cifras exactas)
   var cp=$('#cupos');
   if(cp){fetch('/api/cupos',{cache:'no-store'}).then(function(r){return r.json()}).then(function(d){
-    var DN=d.drop>1?'drop '+d.drop:'primer drop',DC=DN[0].toUpperCase()+DN.slice(1);var T={abierto:DC+' abierto',llenando:'Se están llenando los cupos',ultimos:'Últimos cupos del '+DN,agotado:DC+' agotado'};
+    var DN=d.drop>1?'drop '+d.drop:'primer drop',DC=DN[0].toUpperCase()+DN.slice(1);var T={abierto:DC+' abierto',llenando:'Se están llenando los cupos',ultimos:'Últimos cupos del '+DN,agotado:DC+' agotado',pronto:'Nuevo drop pronto'};var AG=d.nivel==='agotado'||d.nivel==='pronto',PR=d.nivel==='pronto';
     $('#cupTxt').textContent=T[d.nivel]||T.abierto;cp.hidden=false;
-    cp.classList.toggle('ult',d.nivel==='ultimos');cp.classList.toggle('ago',d.nivel==='agotado');
-    requestAnimationFrame(function(){$('#cupBar').style.width=(d.nivel==='agotado'?100:d.barra)+'%'});
-    if(d.nivel==='agotado'){var pr=$('#prow');if(pr)pr.style.display='none';$$('[data-add]').forEach(function(b){b.style.display='none'});
+    cp.classList.toggle('ult',d.nivel==='ultimos');cp.classList.toggle('ago',d.nivel==='agotado');cp.classList.toggle('pro',PR);
+    requestAnimationFrame(function(){$('#cupBar').style.width=(AG?100:d.barra)+'%'});
+    if(AG){var pr=$('#prow');if(pr)pr.style.display='none';$$('[data-add]').forEach(function(b){b.style.display='none'});
       b.classList.add('agotado');
-      var h=$('.reserva h2');if(h)h.textContent=DC+' agotado.';
-      var ld=$('.reserva p.lead');if(ld)ld.textContent='Gracias por llegar hasta aquí. Déjanos tu correo y te avisamos primero cuando abramos el próximo drop.';
+      var h=$('.reserva h2');if(h)h.textContent=PR?'Nuevo drop pronto.':DC+' agotado.';
+      var ld=$('.reserva p.lead');if(ld)ld.textContent=PR?'Estamos preparando el siguiente drop. Déjanos tu correo y te avisamos primero cuando abra.':'Gracias por llegar hasta aquí. Déjanos tu correo y te avisamos primero cuando abramos el próximo drop.';
       var l=$('#espL');if(l)l.textContent='Tu correo para avisarte del próximo drop';
       var ei=$('#espIn');if(ei){ei.placeholder='tucorreo@ejemplo.com';ei.type='email'}
       var bs=$('.bar');if(bs)bs.style.display='none'}
