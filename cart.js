@@ -27,7 +27,11 @@
   function total(){return Math.round((sub(qty)-disc()+shipCost())*100)/100}
   function render(){
     var cb=$('.cartbtn');if(cb){cb.classList.toggle('has',qty>0);$('.cnt',cb).textContent=qty}
-    var pq=$('#pq');if(pq){pq.textContent=picker;var pt=$('#ptot');if(pt){pt.textContent=picker>=2?'Tu selección: '+money(sub(picker))+(ahorro(picker)>0?' · ahorras '+money(ahorro(picker)):''):''}$('#pqm').disabled=picker<=1;$('#pqp').disabled=picker>=CFG.maxPorPedido}
+    var pk=$('#packs');if(pk){
+      var ops=[1,2];if(CFG.precioPack5>0&&CFG.precioPack5<5*CFG.precio)ops.push(5);ops=ops.filter(function(n){return n<=CFG.maxPorPedido});if(ops.indexOf(picker)<0)picker=1;
+      pk.innerHTML=ops.map(function(n){var s=sub(n),a=ahorro(n),on=n===picker;
+        return '<button type="button" role="radio" aria-checked="'+on+'" class="pk'+(on?' on':'')+'" data-pack="'+n+'">'+(n===ops[ops.length-1]&&n>=5?'<em class="pkb">MAYOR AHORRO</em>':'')+'<i class="pkr"></i><span class="pkn">'+n+' unidad'+(n>1?'es':'')+'</span>'+(a>0?'<span class="pks">Ahorras '+money(a)+'</span>':'')+'<span class="pkp"><b>'+money(s)+'</b>'+(a>0?'<s>'+money(CFG.precio*n)+'</s>':'<small>Precio unitario</small>')+'</span></button>'}).join('');
+      var bb=$('#packBtn');if(bb)bb.textContent='Agregar '+picker+' unidad'+(picker>1?'es':'')+' al carrito · '+money(sub(picker))}
     var body=$('#cartBody'),foot=$('#cartFoot');if(!body)return;
     if(!qty){body.innerHTML='<div class="empty"><div class="disp" style="font-size:28px;color:#0038FF;font-weight:700">Tu carrito está vacío</div><p>Agrega tu Bluzzo y recibe un bolígrafo blanco de regalo.</p><a href="#reserva" class="btn" style="background:#0038FF;color:#fff" data-cart-close>Ver el notebook</a></div>';foot.style.display='none';return}
     foot.style.display='flex';
@@ -111,6 +115,7 @@
     if(t.hasAttribute('data-cart-open')){ev.preventDefault();open()}
     else if(t.hasAttribute('data-cart-close')){close()}
     else if(t.hasAttribute('data-q')){setQty(qty+parseInt(t.getAttribute('data-q'),10))}
+    else if(t.hasAttribute('data-pack')){picker=parseInt(t.getAttribute('data-pack'),10)||1;render()}
     else if(t.hasAttribute('data-pq')){picker=Math.max(1,Math.min(CFG.maxPorPedido,picker+parseInt(t.getAttribute('data-pq'),10)));render()}
     else if(t.hasAttribute('data-add')){var n=t.getAttribute('data-add')==='picker'?picker:1;setQty(Math.min(CFG.maxPorPedido,qty+n));if(window.bzTrack)bzTrack('AddToCart',{content_name:CFG.producto,currency:'PEN',value:sub(n),num_items:n});open()}
     else if(t.id==='cartPay'){pay()}
