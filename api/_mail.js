@@ -45,3 +45,5 @@ exports.confirmacionEspera = () => ({
   html: wrap(`<h2 style="margin:0 0 6px;font-size:24px">¡Listo, estás en la lista!</h2>
 <p style="margin:0">Te avisaremos a este correo antes que a nadie cuando abramos el próximo drop del Bluzzo Blueprint Notebook.</p>`)
 });
+
+exports.wrapPublic = (inner) => wrap(inner);

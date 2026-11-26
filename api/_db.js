@@ -20,8 +20,8 @@ exports.subtotal = (qty) => Math.floor(qty / 2) * (cfg.precioPar || cfg.precio *
 exports.txt = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
 
 // Cupos vendidos (sin cancelados)
-exports.vendidos = async () => {
-  const rows = await exports.q('bluzzo_pedidos?select=cantidad&estado=neq.cancelado');
+exports.vendidos = async (n) => {
+  const rows = await exports.q('bluzzo_pedidos?select=cantidad&estado=neq.cancelado' + (n ? '&drop_n=eq.' + n : ''));
   return (rows || []).reduce((a, r) => a + (r.cantidad || 0), 0);
 };
 // Calcula el descuento de un código sobre el subtotal. Devuelve {ok, descuento, codigo, mensaje}
@@ -38,3 +38,22 @@ exports.aplicarCodigo = async (codigoRaw, subtotal) => {
   d = Math.min(Math.round(d * 100) / 100, subtotal);
   return { ok: true, descuento: d, codigo, tipo: c.tipo, valor: Number(c.valor) };
 };
+
+// Drop vigente: los valores guardados desde el panel (tabla bluzzo_config, clave "drop") mandan sobre config.json
+let _d = null, _dt = 0;
+const pos = (v) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : null);
+exports.drop = async () => {
+  if (_d && Date.now() - _dt < 8000) return _d;
+  let o = {};
+  try { if (key()) { const r = await exports.q('bluzzo_config?select=valor&clave=eq.drop'); if (r && r[0]) o = JSON.parse(r[0].valor) || {}; } } catch (e) { /* usa config.json */ }
+  const precio = pos(o.precio) || cfg.precio;
+  _d = { n: parseInt(o.n, 10) || 1, cupos: pos(o.cupos) || cfg.cuposTotal, precio, precioNormal: pos(o.precioNormal) || cfg.precioNormal || precio,
+    precioPar: pos(o.precioPar) || cfg.precioPar || precio * 2, entrega: o.entrega || cfg.entrega, maxPorPedido: pos(o.maxPorPedido) || cfg.maxPorPedido, pausado: !!o.pausado };
+  _dt = Date.now();
+  return _d;
+};
+exports.guardarDrop = async (o) => {
+  await exports.q('bluzzo_config?on_conflict=clave', { method: 'POST', prefer: 'resolution=merge-duplicates,return=minimal', body: { clave: 'drop', valor: JSON.stringify(o) } });
+  _d = null;
+};
+exports.subtotalD = (d, qty) => Math.floor(qty / 2) * d.precioPar + (qty % 2) * d.precio;

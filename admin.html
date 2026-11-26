@@ -1,4 +1,4 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/img/icon-192.png" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/img/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>Panel · Bluzzo</title>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/img/icon-192.png" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/img/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><link rel="manifest" href="/admin.webmanifest"><meta name="theme-color" content="#0038FF"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Bluzzo"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><title>Panel · Bluzzo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{--az:#0038FF;--az2:#002AC4;--ma:#031447;--hi:#EEF2FF;--li:#DCE4FF;--tx2:#5a6a99;--ok:#0E9F6E;--warn:#D97706;--bad:#C0152F;--r:18px}
@@ -71,6 +71,7 @@ main{padding:28px clamp(16px,3vw,40px) 60px;max-width:1180px;width:100%}
 .part.h{border-top:0;color:var(--tx2);font-size:13px;font-weight:600;padding-bottom:6px}.part .c{text-align:center}.part small{color:var(--tx2);display:block}
 .part.no{opacity:.55}
 .tg{width:44px;height:26px;border-radius:99px;background:var(--li);border:0;position:relative;cursor:pointer;transition:background .2s;padding:0}.tg::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.25)}.tg.on{background:var(--ok)}.tg.on::after{transform:translateX(18px)}
+.rg2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}.rg2 label{font-weight:600;font-size:13px;color:var(--tx2);display:flex;flex-direction:column;gap:5px}
 .hint{background:var(--hi);border-radius:14px;padding:12px 14px;color:var(--tx2);font-size:14px}
 /* toast */
 #toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,40px);background:var(--ma);color:#fff;padding:12px 20px;border-radius:99px;font-weight:600;opacity:0;pointer-events:none;transition:.3s;z-index:50}#toast.on{opacity:1;transform:translate(-50%,0)}
@@ -97,7 +98,9 @@ main{padding:28px clamp(16px,3vw,40px) 60px;max-width:1180px;width:100%}
   <button data-v="resumen" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>Resumen</button>
   <button data-v="pedidos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Pedidos<span class="n" id="nP"></span></button>
   <button data-v="sorteo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg>Sorteo</button>
+  <button data-v="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7 5.6 12.2a7 7 0 1 0 12.8 0z"/></svg>Drop</button>
   <button data-v="codigos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/><circle cx="7" cy="7" r="1.5"/></svg>Códigos</button>
+  <button data-v="reclamos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Reclamos<span class="n" id="nR"></span></button>
   <button data-v="contactos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>Contactos<span class="n" id="nC"></span></button>
  </nav>
  <div class="bot"><a href="/" target="_blank" rel="noopener">Ver el sitio ↗</a><button id="out">Cerrar sesión</button></div>
@@ -108,15 +111,17 @@ main{padding:28px clamp(16px,3vw,40px) 60px;max-width:1180px;width:100%}
  <section class="view on" id="v-resumen"></section>
  <section class="view" id="v-pedidos"></section>
  <section class="view" id="v-sorteo"></section>
+ <section class="view" id="v-drop"></section>
  <section class="view" id="v-codigos"></section>
+ <section class="view" id="v-reclamos"></section>
  <section class="view" id="v-contactos"></section>
 </main></div>
 <div id="toast"></div>
 
 <script>
-var K=sessionStorage.getItem('bk')||'',D=null,V='resumen',PF={q:'',e:'todos'},CT='subs',SM='',WIN=null,PREMIO='1 notebook Bluzzo';
+var K=localStorage.getItem('bk')||'',D=null,V='resumen',PF={q:'',e:'todos'},CT='subs',SM='',WIN=null,PREMIO='1 notebook Bluzzo';
 var $=function(s,r){return(r||document).querySelector(s)};
-function api(m,b){return fetch('/api/admin',{method:m,headers:{'x-admin-key':K,'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined}).catch(function(){throw new Error('red')}).then(function(r){if(r.status===401)throw new Error('clave');if(r.status===501)throw new Error('config');if(!r.ok)throw new Error('x');return r.json()})}
+function api(m,b,sub){if(m==='POST_PUSH')return fetch('/api/push',{method:'POST',headers:{'x-admin-key':K,'Content-Type':'application/json'},body:JSON.stringify({accion:'suscribir',sub:sub.toJSON()})}).then(function(r){if(!r.ok)throw new Error('x');return r.json()});return fetch('/api/admin',{method:m,headers:{'x-admin-key':K,'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined}).catch(function(){throw new Error('red')}).then(function(r){if(r.status===401)throw new Error('clave');if(r.status===501)throw new Error('config');if(!r.ok)throw new Error('x');return r.json()})}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function f(d){return new Date(d).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short'})}
 function money(n){return 'S/ '+Number(n).toFixed(2)}
@@ -130,10 +135,10 @@ function nextState(e){return{pagado:'enviado',enviado:'entregado'}[e]}
 var NS={pagado:'Marcar enviado',enviado:'Marcar entregado'};
 
 /* ---------- vistas ---------- */
-var TITLES={resumen:['Resumen','Cómo va tu primer drop.'],pedidos:['Pedidos','Gestiona, contacta y envía.'],sorteo:['Sorteo mensual','Elige al ganador del mes.'],codigos:['Códigos','Descuentos para tus clientes.'],contactos:['Contactos','Suscriptores y lista de espera.']};
+var TITLES={resumen:['Resumen','Cómo va tu primer drop.'],pedidos:['Pedidos','Gestiona, contacta y envía.'],sorteo:['Sorteo mensual','Elige al ganador del mes.'],drop:['Drop','Cupos, precio y nuevos lanzamientos.'],reclamos:['Libro de Reclamaciones','Reclamos y quejas de tus clientes.'],codigos:['Códigos','Descuentos para tus clientes.'],contactos:['Contactos','Suscriptores y lista de espera.']};
 function go(v){V=v;document.querySelectorAll('.view').forEach(function(x){x.classList.toggle('on',x.id==='v-'+v)});document.querySelectorAll('#nav button').forEach(function(b){b.classList.toggle('on',b.dataset.v===v)});$('#vt').textContent=TITLES[v][0];$('#vs').textContent=TITLES[v][1];render();window.scrollTo(0,0)}
 function vivos(){return D.pedidos.filter(function(p){return p.estado!=='cancelado'})}
-function render(){if(!D)return;$('#nP').textContent=D.pedidos.filter(function(p){return p.estado==='pagado'}).length||'';$('#nC').textContent=(D.suscriptores.length+D.espera.length)||'';({resumen:rResumen,pedidos:rPedidos,sorteo:rSorteo,codigos:rCodigos,contactos:rContactos})[V]()}
+function render(){if(!D)return;setTimeout(pushUi,0);$('#nP').textContent=D.pedidos.filter(function(p){return p.estado==='pagado'}).length||'';$('#nR').textContent=(D.reclamos||[]).filter(function(r){return r.estado==='pendiente'}).length||'';$('#nC').textContent=(D.suscriptores.length+D.espera.length)||'';({resumen:rResumen,pedidos:rPedidos,sorteo:rSorteo,drop:rDrop,reclamos:rReclamos,codigos:rCodigos,contactos:rContactos})[V]()}
 
 function ordRow(p){var nx=NS[p.estado];
  return '<div class="ord '+p.estado+'"><div><div class="ref">'+esc(p.ref)+'</div><div class="dt">'+f(p.created_at)+'</div><div class="mini"><span class="pill '+p.estado+'">'+p.estado+'</span></div></div>'+
@@ -153,7 +158,7 @@ function rResumen(){var r=D.resumen,pct=Math.min(100,Math.round(r.libros/r.cupos
  '<div class="k"><small>Hoy</small><b>'+hoy+'</b><span>pedidos nuevos</span></div></div>'+
  '<div class="grid2"><div class="card"><h2>Por enviar <button class="b s g" data-go="pedidos">Ver todos</button></h2>'+(pend.map(ordRow).join('')||'<div class="empty">Nada pendiente. ¡Todo al día! 🎉</div>')+'</div>'+
  '<div><div class="card"><h2>Tu comunidad</h2><div class="crow"><span>Suscriptores</span><b>'+D.suscriptores.length+'</b></div><div class="crow"><span>Lista de espera</span><b>'+D.espera.length+'</b></div><div class="crow"><span>Códigos activos</span><b>'+D.codigos.filter(function(c){return c.activo}).length+'</b></div></div>'+
- '<div class="card"><h2>Atajos</h2><div style="display:flex;flex-direction:column;gap:8px"><button class="b" data-go="sorteo">🎁 Hacer el sorteo del mes</button><button class="b g" id="qm">Copiar todos los correos</button><button class="b g" id="qe">Exportar pedidos (CSV)</button></div></div></div></div>'}
+ '<div class="card" id="pushBox"><h2>Notificaciones en tu celular</h2><div id="pushUi" class="hint">Revisando…</div></div><div class="card"><h2>Atajos</h2><div style="display:flex;flex-direction:column;gap:8px"><button class="b" data-go="sorteo">🎁 Hacer el sorteo del mes</button><button class="b g" id="qm">Copiar todos los correos</button><button class="b g" id="qe">Exportar pedidos (CSV)</button></div></div></div></div>'}
 
 function filtrados(){var q=PF.q.toLowerCase();return D.pedidos.filter(function(p){return(PF.e==='todos'||p.estado===PF.e)&&(!q||[p.ref,p.nombre,p.celular,p.email,p.direccion].join(' ').toLowerCase().indexOf(q)>-1)})}
 function rPedidos(){var c={todos:D.pedidos.length};['pagado','enviado','entregado','cancelado'].forEach(function(e){c[e]=D.pedidos.filter(function(p){return p.estado===e}).length});
@@ -169,6 +174,44 @@ function rCodigos(){$('#v-codigos').innerHTML='<div class="card"><h2>Crear códi
 function rContactos(){var L=CT==='subs'?D.suscriptores:D.espera;
  $('#v-contactos').innerHTML='<div class="card"><div class="tools"><div class="seg"><button data-ct="subs" class="'+(CT==='subs'?'on':'')+'">Suscriptores ('+D.suscriptores.length+')</button><button data-ct="esp" class="'+(CT==='esp'?'on':'')+'">Lista de espera ('+D.espera.length+')</button></div><span class="grow"></span><button class="b g" id="cm2">Copiar correos</button><button class="b g" id="cx">Exportar CSV</button></div>'+
  (L.map(function(e){var c=CT==='subs'?e.correo:e.contacto,w=CT==='esp'&&e.tipo==='whatsapp';return '<div class="crow"><div><b>'+esc(c)+'</b><br><small>'+f(e.created_at)+(CT==='subs'?(e.origen?' · desde '+esc(e.origen):''):' · '+e.tipo)+'</small></div><div style="display:flex;gap:8px">'+(w?'<a class="b s g" target="_blank" rel="noopener" href="'+wa(c)+'">WhatsApp</a>':'')+'<button class="b s g" data-cp="'+esc(c)+'">Copiar</button></div></div>'}).join('')||'<div class="empty">Aún no hay '+(CT==='subs'?'suscriptores':'nadie en espera')+'.</div>')+'</div>'}
+
+
+
+/* ---------- notificaciones push ---------- */
+function pushOk(){return 'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window}
+function standalone(){return window.navigator.standalone===true||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)}
+function u8(b){var p='='.repeat((4-b.length%4)%4),s=(b+p).replace(/-/g,'+').replace(/_/g,'/'),r=atob(s),o=new Uint8Array(r.length);for(var i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o}
+function pushUi(){var e=$('#pushUi');if(!e)return;
+ var ios=/iPhone|iPad|iPod/.test(navigator.userAgent);
+ if(!pushOk()){e.innerHTML=ios&&!standalone()?'<b>Para recibir avisos en tu iPhone:</b><ol style="margin:8px 0 0;padding-left:20px;line-height:1.7"><li>Abre este panel en <b>Safari</b>.</li><li>Toca el botón <b>Compartir</b> (cuadrado con flecha) → <b>Añadir a pantalla de inicio</b>.</li><li>Abre «Bluzzo» desde tu pantalla de inicio, entra con tu clave y vuelve aquí a pulsar <b>Activar notificaciones</b>.</li></ol>':'Este navegador no permite notificaciones. Prueba con Chrome o Safari actualizado.';return}
+ if(Notification.permission==='denied'){e.innerHTML='Bloqueaste las notificaciones. Actívalas en los Ajustes de tu celular → Notificaciones → Bluzzo (o en los permisos del navegador) y vuelve aquí.';return}
+ navigator.serviceWorker.getRegistration('/').then(function(r){return r?r.pushManager.getSubscription():null}).then(function(s){
+  if(s&&Notification.permission==='granted'){e.innerHTML='<b>✓ Activadas en este dispositivo.</b> Te avisamos de pedidos, lista de espera, suscriptores y reclamos. <div style="margin-top:10px"><button class="b s g" id="pushTest">Enviar notificación de prueba</button></div>'}
+  else e.innerHTML='Recibe un aviso en tu celular cada vez que haya un pedido nuevo, alguien se una a la lista de espera, se suscriba o presente un reclamo.<div style="margin-top:10px"><button class="b" id="pushOn">🔔 Activar notificaciones</button></div>'+(ios&&!standalone()?'<p style="margin:10px 0 0;font-size:13px">En iPhone funciona solo desde la app instalada: Compartir → <b>Añadir a pantalla de inicio</b>.</p>':'')})}
+function pushActivar(){var b=$('#pushOn');if(b){b.disabled=true;b.textContent='Activando…'}
+ Notification.requestPermission().then(function(p){if(p!=='granted')throw new Error('perm');return navigator.serviceWorker.register('/sw-admin.js')}).then(function(){return navigator.serviceWorker.ready})
+ .then(function(reg){return fetch('/api/push',{headers:{'x-admin-key':K}}).then(function(r){if(!r.ok)throw new Error('k');return r.json()}).then(function(j){return reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:u8(j.publicKey)})})})
+ .then(function(s){return api('POST_PUSH',null,s)}).then(function(){toast('Notificaciones activadas');pushUi()}).catch(function(e){toast(e.message==='perm'?'No diste permiso':'No se pudo activar');pushUi()})}
+
+/* ---------- drop ---------- */
+function fld(id,l,v,ex){return '<label>'+l+'<input id="'+id+'" value="'+esc(v)+'" '+(ex||'')+' style="width:100%"></label>'}
+function rDrop(){var d=D.drop,r=D.resumen,pct=Math.min(100,Math.round(r.libros/d.cupos*100)),by={};
+ D.pedidos.forEach(function(p){if(p.estado==='cancelado')return;var n=p.drop_n||1,x=by[n]||(by[n]={n:n,libros:0,total:0,pedidos:0});x.libros+=p.cantidad;x.total+=Number(p.total);x.pedidos++});
+ var hist=Object.keys(by).sort(function(a,b){return b-a}).map(function(k){var x=by[k];return '<div class="crow"><div><b>Drop '+x.n+'</b>'+(x.n===d.n?' <span class="pill">en curso</span>':'')+'<br><small>'+x.pedidos+' pedido'+(x.pedidos==1?'':'s')+'</small></div><div style="text-align:right"><b>'+x.libros+' libros</b><br><small>'+money(x.total)+' cobrados</small></div></div>'}).join('')||'<div class="empty">Aún no hay ventas.</div>';
+ var num='type="number" min="1" step="any" inputmode="decimal"';
+ $('#v-drop').innerHTML='<div class="kpis"><div class="k az"><small>Drop '+d.n+(d.pausado?' · pausado':'')+'</small><b>'+r.libros+' / '+d.cupos+'</b><div class="bar"><i style="width:'+pct+'%"></i></div><span>'+pct+'% vendido · quedan '+Math.max(0,d.cupos-r.libros)+'</span></div><div class="k"><small>Precio actual</small><b>'+money(d.precio)+'</b><span>pack de 2: '+money(d.precioPar)+'</span></div><div class="k"><small>Lista de espera</small><b>'+(D.espera.length)+'</b><span>esperan el próximo drop</span></div></div>'+
+ '<div class="card"><h2>Drop '+d.n+' · ajustes</h2><div class="rg2">'+fld('dc','Cupos totales',d.cupos,num)+fld('dp','Precio (S/)',d.precio,num)+fld('dn','Precio normal (S/, tachado)',d.precioNormal,num)+fld('dpp','Pack de 2 (S/)',d.precioPar,num)+fld('dm','Máx. por pedido',d.maxPorPedido,num)+fld('de','Entrega estimada',d.entrega)+'</div>'+
+ '<div class="crow" style="margin-top:10px"><div><b>Pausar ventas</b><br><small>Muestra «agotado» y la lista de espera, aunque queden cupos.</small></div><button class="tg'+(d.pausado?' on':'')+'" id="dpa" aria-label="Pausar ventas"></button></div><div style="margin-top:14px"><button class="b" id="dsave">Guardar cambios</button></div></div>'+
+ '<div class="card"><h2>Abrir un nuevo drop</h2><p style="margin:0 0 12px;color:var(--tx2)">Cierra el <b>drop '+d.n+'</b> y abre el <b>drop '+(d.n+1)+'</b> con cupos en cero. Los pedidos del drop '+d.n+' se conservan. La lista de espera ('+D.espera.length+') no se borra: avísales cuando lo abras.</p><div class="rg2">'+fld('nc','Cupos del nuevo drop',d.cupos,num)+fld('np','Precio (S/)',d.precio,num)+fld('nn','Precio normal (S/)',d.precioNormal,num)+fld('npp','Pack de 2 (S/)',d.precioPar,num)+fld('ne','Entrega estimada','')+'</div><div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap"><button class="b ok" id="dnew">Abrir drop '+(d.n+1)+'</button><button class="b g" id="dmails">Copiar correos de la lista de espera</button></div></div>'+
+ '<div class="card"><h2>Historial de drops</h2>'+hist+'</div>'}
+function dropBody(p){var g=function(i){return $('#'+i).value};return p==='d'?{cupos:g('dc'),precio:g('dp'),precioNormal:g('dn'),precioPar:g('dpp'),maxPorPedido:g('dm'),entrega:g('de'),pausado:$('#dpa').classList.contains('on')}:{cupos:g('nc'),precio:g('np'),precioNormal:g('nn'),precioPar:g('npp'),entrega:g('ne')}}
+
+/* ---------- reclamos ---------- */
+function rReclamos(){var L=D.reclamos||[];$('#v-reclamos').innerHTML='<div class="card"><div class="hint" style="margin-bottom:12px">Por ley debes responder cada hoja en un máximo de <b>15 días hábiles</b>. Escribe la respuesta, márcala como respondida y envíala por correo o WhatsApp.</div>'+
+ (L.map(function(r){var dias=Math.floor((Date.now()-new Date(r.created_at))/864e5);return '<div class="crow" style="align-items:flex-start;padding:16px 4px"><div style="flex:1 1 320px"><b>N.° '+String(r.numero).padStart(6,'0')+' · '+esc(r.nombre)+'</b> <span class="pill '+(r.estado==='respondido'?'entregado':'enviado')+'">'+esc(r.estado)+'</span> <span class="pill">'+esc(r.tipo)+'</span><br><small>'+f(r.created_at)+(r.estado==='pendiente'?' · hace '+dias+' día'+(dias==1?'':'s')+' (plazo: 15 días hábiles)':'')+' · '+esc(r.doc_tipo||'')+' '+esc(r.doc_num||'')+'</small>'+
+  '<p style="margin:8px 0 4px"><b>Detalle:</b> '+esc(r.detalle)+'</p><p style="margin:0 0 4px"><b>Pide:</b> '+esc(r.pedido)+'</p><small>'+esc(r.bien||'')+(r.monto?' · '+money(r.monto):'')+(r.ref_pedido?' · pedido '+esc(r.ref_pedido):'')+(r.menor?' · menor de edad, representante: '+esc(r.rep_nombre||''):'')+'</small>'+
+  '<textarea data-rr="'+r.id+'" rows="2" placeholder="Tu respuesta al cliente" style="width:100%;margin-top:8px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--li);font:inherit">'+esc(r.respuesta||'')+'</textarea></div>'+
+  '<div style="display:flex;gap:6px;flex-wrap:wrap;flex-direction:column"><button class="b s ok" data-rs="'+r.id+'" data-st="'+(r.estado==='respondido'?'pendiente':'respondido')+'">'+(r.estado==='respondido'?'Reabrir':'Marcar respondido')+'</button><a class="b s g" target="_blank" rel="noopener" href="'+wa(r.celular,'Hola '+r.nombre+', respondemos a tu hoja de reclamación N.° '+String(r.numero).padStart(6,'0')+': '+(r.respuesta||''))+'">WhatsApp</a><a class="b s g" href="mailto:'+esc(r.email)+'?subject='+encodeURIComponent('Respuesta a tu hoja de reclamación N.° '+String(r.numero).padStart(6,'0'))+'&body='+encodeURIComponent(r.respuesta||'')+'">Correo</a></div></div>'}).join('')||'<div class="empty">Aún no hay reclamos. Ojalá sigan en cero 🙌</div>')+'</div>'}
 
 /* ---------- sorteo ---------- */
 function participantes(mes){var m={};D.pedidos.forEach(function(p){if(p.estado==='cancelado'||mesDe(p.created_at)!==mes)return;var k=(p.email||p.celular).toLowerCase();var x=m[k]||(m[k]={correo:k,nombre:p.nombre,celular:p.celular,ref:p.ref,n:0});x.n+=p.cantidad});
@@ -192,14 +235,14 @@ function sortear(){var el=participantes(SM).filter(function(x){return x.ok});if(
 function confetti(){var c=['#fff','#9DB4FF','#FFD84D'];for(var i=0;i<46;i++){var e=document.createElement('i');e.style.cssText='position:fixed;top:-10px;left:'+Math.random()*100+'vw;width:8px;height:14px;background:'+c[i%3]+';z-index:60;border-radius:2px;pointer-events:none;transition:transform '+(1.6+Math.random()*1.4)+'s cubic-bezier(.2,.6,.4,1),opacity 2.6s;';document.body.appendChild(e);(function(e){setTimeout(function(){e.style.transform='translate('+(Math.random()*160-80)+'px,'+(innerHeight+40)+'px) rotate('+Math.random()*720+'deg)';e.style.opacity=0},30);setTimeout(function(){e.remove()},3200)})(e)}}
 
 /* ---------- datos / eventos ---------- */
-function load(){return api('GET').then(function(d){D=d;$('#login').hidden=true;$('#app').hidden=false;render()}).catch(function(e){$('#login').hidden=false;$('#app').hidden=true;sessionStorage.removeItem('bk');
+function load(){return api('GET').then(function(d){D=d;$('#login').hidden=true;$('#app').hidden=false;render()}).catch(function(e){$('#login').hidden=false;$('#app').hidden=true;localStorage.removeItem('bk');
  var M={clave:'Clave incorrecta. Revisa mayúsculas y que no tenga espacios.',config:'El panel aún no está configurado en el servidor.',red:'No hay conexión con el servidor. Revisa tu internet e inténtalo de nuevo.'};
  $('#le').textContent=M[e.message]||'Algo falló al cargar el panel. Inténtalo otra vez.';throw e})}
 function act(b,msg){return api('POST',b).then(function(){return load()}).then(function(){if(msg)toast(msg)}).catch(function(){toast('No se pudo guardar')})}
-$('#go').onclick=function(){var b=$('#go');K=$('#pw').value.trim();if(!K){$('#le').textContent='Escribe tu clave.';return}sessionStorage.setItem('bk',K);$('#le').textContent='';b.disabled=true;b.textContent='Entrando…';load().catch(function(){}).then(function(){b.disabled=false;b.textContent='Entrar'})};
+$('#go').onclick=function(){var b=$('#go');K=$('#pw').value.trim();if(!K){$('#le').textContent='Escribe tu clave.';return}localStorage.setItem('bk',K);$('#le').textContent='';b.disabled=true;b.textContent='Entrando…';load().catch(function(){}).then(function(){b.disabled=false;b.textContent='Entrar'})};
 $('#pw').onkeydown=function(e){if(e.key==='Enter')$('#go').click()};
 $('#eye').onclick=function(){var p=$('#pw'),v=p.type==='password';p.type=v?'text':'password';this.textContent=v?'Ocultar':'Ver'};
-function salir(){sessionStorage.removeItem('bk');location.reload()}$('#out').onclick=salir;$('#out2').onclick=salir;
+function salir(){localStorage.removeItem('bk');location.reload()}$('#out').onclick=salir;$('#out2').onclick=salir;
 $('#ref').onclick=function(){load().then(function(){toast('Actualizado')}).catch(function(){})};
 $('#nav').onclick=function(e){var b=e.target.closest('button');if(b)go(b.dataset.v)};
 document.addEventListener('click',function(e){var t=e.target.closest('button,a');if(!t)return;var d=t.dataset;
@@ -213,6 +256,14 @@ document.addEventListener('click',function(e){var t=e.target.closest('button,a')
  if(d.t){var k=d.k,x=participantes(SM).filter(function(p){return p.correo===k})[0],s=x.sigue,h=x.historia;if(d.t==='sigue')s=!s;else h=!h;
   var ex=D.sorteo_estado.filter(function(e){return e.mes===SM&&e.correo===k})[0];if(ex){ex.sigue=s;ex.historia=h}else D.sorteo_estado.push({mes:SM,correo:k,sigue:s,historia:h});WIN=null;rSorteo();
   return api('POST',{accion:'sorteo_check',mes:SM,correo:k,sigue:s,historia:h}).catch(function(){toast('No se pudo guardar')})}
+
+ if(t.id==='dpa'){t.classList.toggle('on');return}
+ if(t.id==='dsave')return act(Object.assign({accion:'drop_guardar'},dropBody('d')),'Drop actualizado');
+ if(t.id==='dnew'){if(confirm('¿Cerrar el drop '+D.drop.n+' y abrir el drop '+(D.drop.n+1)+'? Los cupos empiezan en cero.'))act(Object.assign({accion:'drop_nuevo'},dropBody('n')),'¡Drop '+(D.drop.n+1)+' abierto!');return}
+ if(t.id==='dmails'){var m=D.espera.filter(function(x){return x.tipo==='correo'}).map(function(x){return x.contacto}).concat(D.suscriptores.map(function(x){return x.correo}));m=m.filter(function(v,i){return m.indexOf(v)===i});return copy(m.join(', '),m.length+' correos copiados')}
+ if(d.rs){var ta=document.querySelector('[data-rr="'+d.rs+'"]');return act({accion:'reclamo_resp',id:d.rs,estado:d.st,respuesta:ta?ta.value:''},d.st==='respondido'?'Marcado como respondido':'Reabierto')}
+ if(t.id==='pushOn')return pushActivar();
+ if(t.id==='pushTest'){t.disabled=true;return fetch('/api/push',{method:'POST',headers:{'x-admin-key':K,'Content-Type':'application/json'},body:JSON.stringify({accion:'probar'})}).then(function(r){return r.json()}).then(function(j){toast(j.enviados?'Enviada: mira tu celular':'No hay dispositivos activos')}).catch(function(){toast('No se pudo enviar')}).then(function(){t.disabled=false})}
  if(t.id==='cadd')return act({accion:'codigo',codigo:$('#cc').value,tipo:$('#ct').value,valor:$('#cv').value,max_usos:$('#cm').value},'Código creado');
  if(t.id==='qe')return csv('pedidos-bluzzo.csv',[['Fecha','Ref','Estado','Nombre','Celular','Correo','Zona','Dirección','Ciudad','Notas','Cantidad','Código','Total']].concat((V==='pedidos'?filtrados():D.pedidos).map(function(p){return[f(p.created_at),p.ref,p.estado,p.nombre,p.celular,p.email,p.zona,p.direccion,p.ciudad,p.notas,p.cantidad,p.codigo,p.total]})));
  if(t.id==='qm'){var s={};D.suscriptores.forEach(function(x){s[x.correo]=1});D.pedidos.forEach(function(p){if(p.email)s[p.email.toLowerCase()]=1});D.espera.forEach(function(x){if(x.tipo==='correo')s[x.contacto]=1});return copy(Object.keys(s).join(', '),Object.keys(s).length+' correos copiados')}
@@ -224,4 +275,5 @@ document.addEventListener('click',function(e){var t=e.target.closest('button,a')
 document.addEventListener('change',function(e){if(e.target.id==='sm'){SM=e.target.value;WIN=null;rSorteo()}});
 document.addEventListener('input',function(e){if(e.target.id==='sp')PREMIO=e.target.value});
 if(K)load().catch(function(){});
+if('serviceWorker' in navigator&&K)navigator.serviceWorker.register('/sw-admin.js').catch(function(){});
 </script></body></html>

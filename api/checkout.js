@@ -15,6 +15,7 @@ module.exports = async (req, res) => {
   b = b || {};
   const txt = (v, n) => String(v || '').trim().slice(0, n);
   const qty = parseInt(b.qty, 10);
+  const dr = await db.drop().catch(() => ({ n: 1, cupos: cfg.cuposTotal, precio: cfg.precio, precioPar: cfg.precioPar, maxPorPedido: cfg.maxPorPedido, pausado: false }));
   const zona = cfg.envio[b.zona];
   const c = b.cliente || {};
   const token = txt(b.token, 60);
@@ -22,15 +23,16 @@ module.exports = async (req, res) => {
   const nombre = txt(c.nombre, 80);
   const cel = txt(c.celular, 20).replace(/\D/g, '');
   const dir = txt(c.direccion, 100);
-  if (!token || !email || !(qty >= 1 && qty <= cfg.maxPorPedido) || !zona) return res.status(400).json({ error: 'pedido_invalido' });
+  if (!token || !email || !(qty >= 1 && qty <= dr.maxPorPedido) || !zona) return res.status(400).json({ error: 'pedido_invalido' });
   if (!nombre || cel.length < 9 || !dir) return res.status(400).json({ error: 'datos_incompletos' });
 
-  const subtotal = db.subtotal(qty);
+  const subtotal = db.subtotalD(dr, qty);
+  if (dr.pausado) return res.status(409).json({ error: 'agotado', mensaje: 'Las reservas están cerradas por ahora. Únete a la lista de espera.' });
   let descuento = 0, codigo = '';
   if (db.ok()) {
     try {
-      const vend = await db.vendidos();
-      if (vend + qty > cfg.cuposTotal) return res.status(409).json({ error: 'agotado', mensaje: 'El primer drop se agotó. Únete a la lista de espera.' });
+      const vend = await db.vendidos(dr.n);
+      if (vend + qty > dr.cupos) return res.status(409).json({ error: 'agotado', mensaje: 'Este drop se agotó. Únete a la lista de espera.' });
       const a = await db.aplicarCodigo(b.codigo, subtotal);
       if (!a.ok) return res.status(400).json({ error: 'codigo', mensaje: a.mensaje });
       descuento = a.descuento; codigo = a.codigo;
@@ -70,12 +72,13 @@ module.exports = async (req, res) => {
       if (db.ok()) {
         try {
           await db.q('bluzzo_pedidos', { method: 'POST', prefer: 'return=minimal', body: {
-            ref, cantidad: qty, precio_unit: cfg.precio, descuento, envio: zona.costo, total, zona: zona.nombre,
+            ref, cantidad: qty, precio_unit: dr.precio, drop_n: dr.n, descuento, envio: zona.costo, total, zona: zona.nombre,
             nombre, celular: cel, email, direccion: dir, ciudad: txt(c.ciudad, 60), notas: txt(c.notas, 150),
             codigo: codigo || null, culqi_id: d.id } });
           if (codigo) { const cu = await db.q('bluzzo_codigos?select=usos&codigo=eq.' + encodeURIComponent(codigo)); if (cu && cu[0]) await db.q('bluzzo_codigos?codigo=eq.' + encodeURIComponent(codigo), { method: 'PATCH', prefer: 'return=minimal', body: { usos: cu[0].usos + 1 } }); }
         } catch (e) { /* el pago ya está hecho: queda registrado en Culqi con la misma referencia */ }
       }
+      try { await require('./_push').notificar({ titulo: '🛒 Nuevo pedido · S/ ' + total, cuerpo: nombre + ' · ' + qty + ' notebook' + (qty > 1 ? 's' : '') + ' · ' + zona.nombre, url: '/admin', tag: ref }); } catch (e) { /* ignorar */ }
       // correo de confirmación (si hay RESEND_API_KEY); nunca bloquea la respuesta de un pago ya hecho
       try {
         const m = mail.confirmacionPedido({ ref, nombre, celular: cel, direccion: dir, ciudad: txt(c.ciudad, 60), cantidad: qty, zona: zona.nombre, descuento, total });

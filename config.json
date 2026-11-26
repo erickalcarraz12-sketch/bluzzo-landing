@@ -19,5 +19,10 @@
   "cuposTotal": 100,
   "precioPar": 165,
   "metaPixelId": "",
-  "precioNormal": 110
+  "precioNormal": 110,
+  "proveedor": {
+    "nombre": "Bluzzo",
+    "ruc": "",
+    "direccion": "Lima, Perú"
+  }
 }

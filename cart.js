@@ -12,7 +12,8 @@
   function ahorro(q){return CFG.precio*q-sub(q)}
   function fillStatic(){
     $$('[data-price]').forEach(function(e){e.textContent=money(CFG.precio)});
-    $$('[data-normal]').forEach(function(e){if(CFG.precioNormal){e.textContent=money(CFG.precioNormal);e.hidden=false}});
+    $$('[data-normal]').forEach(function(e){if(CFG.precioNormal&&CFG.precioNormal>CFG.precio){e.textContent=money(CFG.precioNormal);e.hidden=false}else{e.hidden=true;var pn=e.closest('.pnormal');if(pn)pn.hidden=true}});
+    if(CFG.drop>1&&!/historia/.test(location.pathname)&&!window.__dn){window.__dn=1;var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n,L=[];while(n=w.nextNode()){if(/primer drop/i.test(n.nodeValue)&&!/SCRIPT|STYLE/.test(n.parentNode.nodeName))L.push(n)}L.forEach(function(n){n.nodeValue=n.nodeValue.replace(/Primer drop/g,'Drop '+CFG.drop).replace(/primer drop/g,'drop '+CFG.drop)})}
     $$('[data-par]').forEach(function(e){e.textContent=money(CFG.precioPar)});
     $$('[data-ahorro]').forEach(function(e){e.textContent=money(2*CFG.precio-CFG.precioPar)});
     $$('[data-entrega]').forEach(function(e){e.textContent=CFG.entrega});
@@ -79,7 +80,7 @@
         if(x.ok&&x.d.ok){var r=x.d;qty=0;cod=null;save();render();close();location.href='/gracias?ref='+encodeURIComponent(r.ref)+'&n='+r.cantidad+'&t='+encodeURIComponent(r.total);return}
         resetBtn();
         if(x.d&&x.d.error==='pago_no_configurado'){fallback(f);return}
-        if(x.d&&x.d.error==='agotado'){msg((x.d.mensaje||'El primer drop se agotó.')+' Déjanos tu correo y te avisamos del próximo.');setTimeout(function(){close();if($('#espera'))$('#espera').scrollIntoView({behavior:'smooth',block:'center'});else location.href='/notebook#espera'},1400);return}
+        if(x.d&&x.d.error==='agotado'){msg((x.d.mensaje||'Este drop se agotó.')+' Déjanos tu correo y te avisamos del próximo.');setTimeout(function(){close();if($('#espera'))$('#espera').scrollIntoView({behavior:'smooth',block:'center'});else location.href='/notebook#espera'},1400);return}
         msg((x.d&&x.d.mensaje)||'No pudimos procesar el pago. Revisa tus datos o escríbenos por WhatsApp.')})
       .catch(function(){resetBtn();msg('No pudimos confirmar el pago. Si te cobraron, escríbenos por WhatsApp.')});
     }else if(Culqi.error){
@@ -117,6 +118,6 @@
   document.addEventListener('change',function(ev){if(ev.target.name==='zona'){zona=ev.target.value;save();render()}});
   document.addEventListener('keydown',function(ev){if(ev.key==='Escape')close();if(ev.key==='Enter'&&ev.target.id==='codeIn'){ev.preventDefault();applyCode()}});
   document.addEventListener('submit',function(ev){ev.preventDefault();pay()});
-  fetch('/config.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(c){CFG=c}).catch(function(){}).then(function(){load();fillStatic();render()});
+  fetch('/api/config',{cache:'no-store'}).then(function(r){if(!r.ok)throw 0;return r}).catch(function(){return fetch('/config.json',{cache:'no-store'})}).then(function(r){return r.json()}).then(function(c){CFG=c}).catch(function(){}).then(function(){load();fillStatic();render()});
   load();fillStatic();render();
 })();

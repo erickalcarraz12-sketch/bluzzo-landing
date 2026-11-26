@@ -14,6 +14,7 @@ module.exports = async (req, res) => {
   if (esWa) c = num;
   try {
     await db.q('bluzzo_espera?on_conflict=contacto', { method: 'POST', prefer: 'resolution=ignore-duplicates,return=minimal', body: { contacto: c.toLowerCase(), tipo: esMail ? 'correo' : 'whatsapp' } });
+    try { await require('./_push').notificar({ titulo: '⏳ Nuevo en lista de espera', cuerpo: c, url: '/admin' }); } catch (x) { /* ignorar */ }
     if (esMail) { try { const m = mail.confirmacionEspera(); await mail.send({ to: c.toLowerCase(), subject: m.subject, html: m.html }); } catch (e) { /* ignorar */ } }
     res.status(200).json({ ok: true });
   } catch (e) { res.status(500).json({ error: 'db' }); }

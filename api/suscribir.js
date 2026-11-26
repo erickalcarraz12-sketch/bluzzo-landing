@@ -9,6 +9,7 @@ module.exports = async (req, res) => {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(c)) return res.status(400).json({ error: 'correo_invalido', mensaje: 'Escribe un correo válido.' });
   try {
     await db.q('bluzzo_suscriptores?on_conflict=correo', { method: 'POST', prefer: 'resolution=ignore-duplicates,return=minimal', body: { correo: c, origen: db.txt(b.origen, 40) || null } });
+    try { await require('./_push').notificar({ titulo: '✉️ Nuevo suscriptor', cuerpo: c, url: '/admin' }); } catch (x) { /* ignorar */ }
     res.status(200).json({ ok: true });
   } catch (e) { res.status(500).json({ error: 'db' }); }
 };
