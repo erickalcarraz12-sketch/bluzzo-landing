@@ -1,5 +1,5 @@
 (function(){
-  var CFG={producto:'Bluzzo Blueprint Notebook A5',precio:79,precioPar:145,maxPorPedido:5,
+  var CFG={producto:'Bluzzo Blueprint Notebook A5',precio:89,precioPar:165,precioNormal:110,maxPorPedido:5,
     envio:{lima:{nombre:'Lima Metropolitana',costo:10},provincia:{nombre:'Provincias (agencia Shalom)',costo:18}},
     entrega:'mediados de enero de 2027',whatsapp:'51926410751',culqiPublicKey:''};
   var KEY='bluzzo_cart_v1',qty=0,zona='lima',busy=false,cod=null;
@@ -12,6 +12,7 @@
   function ahorro(q){return CFG.precio*q-sub(q)}
   function fillStatic(){
     $$('[data-price]').forEach(function(e){e.textContent=money(CFG.precio)});
+    $$('[data-normal]').forEach(function(e){if(CFG.precioNormal){e.textContent=money(CFG.precioNormal);e.hidden=false}});
     $$('[data-par]').forEach(function(e){e.textContent=money(CFG.precioPar)});
     $$('[data-ahorro]').forEach(function(e){e.textContent=money(2*CFG.precio-CFG.precioPar)});
     $$('[data-entrega]').forEach(function(e){e.textContent=CFG.entrega});

@@ -1,6 +1,6 @@
 {
   "producto": "Bluzzo Blueprint Notebook A5",
-  "precio": 79,
+  "precio": 89,
   "maxPorPedido": 5,
   "envio": {
     "lima": {
@@ -17,6 +17,7 @@
   "culqiPublicKey": "pk_test_RO6jMnHkStpyFF5z",
   "supabaseUrl": "https://aqevmqkciboytdbmyzfj.supabase.co",
   "cuposTotal": 100,
-  "precioPar": 145,
-  "metaPixelId": ""
+  "precioPar": 165,
+  "metaPixelId": "",
+  "precioNormal": 110
 }

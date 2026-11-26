@@ -253,3 +253,8 @@ html,body{overflow-x:clip}
 .agotado .pcard,.agotado .pagos,.agotado .bar{display:none!important}
 .agotado .espera{background:#fff;padding:24px;border-radius:20px;box-shadow:0 24px 50px -30px rgba(3,20,71,.4);max-width:34em}
 .agotado .espera label{font-size:18px}
+
+/* precio normal tachado */
+.pnormal{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;font-size:14px;color:#51608F;margin-top:-8px}
+.pnormal s{font:700 24px/1 'Barlow Condensed',sans-serif;color:#8C99C2;text-decoration-thickness:2px}
+.hero .precio s{font:700 22px/1 'Barlow Condensed',sans-serif;color:var(--cota);opacity:.8;text-decoration-thickness:2px}

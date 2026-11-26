@@ -16,5 +16,5 @@
     q.forEach(function(a){if(window.fbq)fbq('track',a[0],a[1]||{},a[2]?{eventID:a[2]}:undefined)});q=[];
   }).catch(function(){});
   // ver el producto
-  if(document.getElementById('reserva'))window.bzTrack('ViewContent',{content_name:'Bluzzo Blueprint Notebook A5',currency:'PEN',value:79});
+  if(document.getElementById('reserva'))window.bzTrack('ViewContent',{content_name:'Bluzzo Blueprint Notebook A5',currency:'PEN',value:89});
 })();
