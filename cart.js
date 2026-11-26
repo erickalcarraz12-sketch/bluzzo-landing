@@ -111,7 +111,7 @@
     d.querySelector('button').onclick=function(){d.remove()};
   }
   document.addEventListener('click',function(ev){
-    var t=ev.target.closest('[data-cart-open],[data-cart-close],[data-q],[data-pq],[data-add],#cartPay,#cartWA,#codeBtn');if(!t)return;
+    var t=ev.target.closest('[data-cart-open],[data-cart-close],[data-q],[data-pq],[data-pack],[data-add],#cartPay,#cartWA,#codeBtn');if(!t)return;
     if(t.hasAttribute('data-cart-open')){ev.preventDefault();open()}
     else if(t.hasAttribute('data-cart-close')){close()}
     else if(t.hasAttribute('data-q')){setQty(qty+parseInt(t.getAttribute('data-q'),10))}
