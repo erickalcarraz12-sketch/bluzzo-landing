@@ -18,8 +18,8 @@ input:focus,select:focus{outline:2px solid var(--az);outline-offset:1px;border-c
 #login{min-height:100svh;display:grid;place-items:center;padding:24px;background:var(--az);background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:36px 36px}
 #login .box{width:100%;max-width:380px;color:#fff}#login img{height:40px;margin-bottom:26px;display:block}
 #login h1{font:700 52px/.95 'Barlow Condensed',sans-serif;text-transform:uppercase;margin:0 0 18px}
-#login .f{background:#fff;border-radius:var(--r);padding:16px;display:flex;gap:10px;box-shadow:0 24px 50px -24px rgba(0,10,80,.7)}#login .f input{flex:1;border:0;background:var(--hi)}
-#le{min-height:22px;margin:12px 4px 0;color:#FFD9DE;font-weight:500}
+#login .f{background:#fff;border-radius:var(--r);padding:16px;display:flex;gap:10px;box-shadow:0 24px 50px -24px rgba(0,10,80,.7)}#login .f input{flex:1;border:0;background:var(--hi);color:var(--ma)}#login .f input::placeholder{color:#8a97c4}#login .f .b[disabled]{opacity:.7}.eye{background:none;border:0;cursor:pointer;color:var(--tx2);font-weight:600;font-size:13px;padding:0 8px}#le.ok{color:#fff}
+#le{min-height:22px;margin:14px 4px 0;color:#fff;font-weight:600;background:rgba(0,10,80,.35);padding:10px 14px;border-radius:12px}#le:empty{background:none;padding:0}
 /* layout */
 #app{display:grid;grid-template-columns:240px 1fr;min-height:100svh}
 .side{background:var(--az);color:#fff;position:sticky;top:0;height:100svh;display:flex;flex-direction:column;padding:22px 16px;background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px);background-size:32px 32px}
@@ -89,7 +89,7 @@ main{padding:28px clamp(16px,3vw,40px) 60px;max-width:1180px;width:100%}
 </style></head><body>
 
 <div id="login"><div class="box"><img src="/img/logo.png" alt="Bluzzo"><h1>Panel<br>de control.</h1>
-<div class="f"><input id="pw" type="password" placeholder="Tu clave" autocomplete="current-password"><button class="b" id="go">Entrar</button></div><p id="le"></p></div></div>
+<div class="f"><input id="pw" type="password" placeholder="Tu clave" autocomplete="current-password" autofocus><button class="eye" id="eye" type="button">Ver</button><button class="b" id="go">Entrar</button></div><p id="le" role="alert"></p></div></div>
 
 <div id="app" hidden>
 <aside class="side"><img class="logo" src="/img/logo.png" alt="Bluzzo">
@@ -116,7 +116,7 @@ main{padding:28px clamp(16px,3vw,40px) 60px;max-width:1180px;width:100%}
 <script>
 var K=sessionStorage.getItem('bk')||'',D=null,V='resumen',PF={q:'',e:'todos'},CT='subs',SM='',WIN=null,PREMIO='1 notebook Bluzzo';
 var $=function(s,r){return(r||document).querySelector(s)};
-function api(m,b){return fetch('/api/admin',{method:m,headers:{'x-admin-key':K,'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined}).then(function(r){if(r.status===401)throw new Error('clave');if(!r.ok)throw new Error('x');return r.json()})}
+function api(m,b){return fetch('/api/admin',{method:m,headers:{'x-admin-key':K,'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined}).catch(function(){throw new Error('red')}).then(function(r){if(r.status===401)throw new Error('clave');if(r.status===501)throw new Error('config');if(!r.ok)throw new Error('x');return r.json()})}
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function f(d){return new Date(d).toLocaleString('es-PE',{dateStyle:'short',timeStyle:'short'})}
 function money(n){return 'S/ '+Number(n).toFixed(2)}
@@ -192,12 +192,15 @@ function sortear(){var el=participantes(SM).filter(function(x){return x.ok});if(
 function confetti(){var c=['#fff','#9DB4FF','#FFD84D'];for(var i=0;i<46;i++){var e=document.createElement('i');e.style.cssText='position:fixed;top:-10px;left:'+Math.random()*100+'vw;width:8px;height:14px;background:'+c[i%3]+';z-index:60;border-radius:2px;pointer-events:none;transition:transform '+(1.6+Math.random()*1.4)+'s cubic-bezier(.2,.6,.4,1),opacity 2.6s;';document.body.appendChild(e);(function(e){setTimeout(function(){e.style.transform='translate('+(Math.random()*160-80)+'px,'+(innerHeight+40)+'px) rotate('+Math.random()*720+'deg)';e.style.opacity=0},30);setTimeout(function(){e.remove()},3200)})(e)}}
 
 /* ---------- datos / eventos ---------- */
-function load(keep){return api('GET').then(function(d){D=d;$('#login').hidden=true;$('#app').hidden=false;render()}).catch(function(e){$('#login').hidden=false;$('#app').hidden=true;$('#le').textContent=e.message==='clave'?'Clave incorrecta.':'El panel aún no está configurado.';sessionStorage.removeItem('bk')})}
+function load(){return api('GET').then(function(d){D=d;$('#login').hidden=true;$('#app').hidden=false;render()}).catch(function(e){$('#login').hidden=false;$('#app').hidden=true;sessionStorage.removeItem('bk');
+ var M={clave:'Clave incorrecta. Revisa mayúsculas y que no tenga espacios.',config:'El panel aún no está configurado en el servidor.',red:'No hay conexión con el servidor. Revisa tu internet e inténtalo de nuevo.'};
+ $('#le').textContent=M[e.message]||'Algo falló al cargar el panel. Inténtalo otra vez.';throw e})}
 function act(b,msg){return api('POST',b).then(function(){return load()}).then(function(){if(msg)toast(msg)}).catch(function(){toast('No se pudo guardar')})}
-$('#go').onclick=function(){K=$('#pw').value;sessionStorage.setItem('bk',K);load()};
+$('#go').onclick=function(){var b=$('#go');K=$('#pw').value.trim();if(!K){$('#le').textContent='Escribe tu clave.';return}sessionStorage.setItem('bk',K);$('#le').textContent='';b.disabled=true;b.textContent='Entrando…';load().catch(function(){}).then(function(){b.disabled=false;b.textContent='Entrar'})};
 $('#pw').onkeydown=function(e){if(e.key==='Enter')$('#go').click()};
+$('#eye').onclick=function(){var p=$('#pw'),v=p.type==='password';p.type=v?'text':'password';this.textContent=v?'Ocultar':'Ver'};
 function salir(){sessionStorage.removeItem('bk');location.reload()}$('#out').onclick=salir;$('#out2').onclick=salir;
-$('#ref').onclick=function(){load().then(function(){toast('Actualizado')})};
+$('#ref').onclick=function(){load().then(function(){toast('Actualizado')}).catch(function(){})};
 $('#nav').onclick=function(e){var b=e.target.closest('button');if(b)go(b.dataset.v)};
 document.addEventListener('click',function(e){var t=e.target.closest('button,a');if(!t)return;var d=t.dataset;
  if(d.go)return go(d.go);
@@ -220,5 +223,5 @@ document.addEventListener('click',function(e){var t=e.target.closest('button,a')
 });
 document.addEventListener('change',function(e){if(e.target.id==='sm'){SM=e.target.value;WIN=null;rSorteo()}});
 document.addEventListener('input',function(e){if(e.target.id==='sp')PREMIO=e.target.value});
-if(K)load();
+if(K)load().catch(function(){});
 </script></body></html>
