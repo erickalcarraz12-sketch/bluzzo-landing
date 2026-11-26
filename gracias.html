@@ -10,7 +10,7 @@ h1{font:700 clamp(54px,12vw,96px)/.92 'Barlow Condensed',sans-serif;text-transfo
 .row{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid #e3e9ff}.row:last-child{border:0}
 .btns{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-block;padding:14px 24px;border-radius:99px;font-weight:600;text-decoration:none;border:0;cursor:pointer;font:inherit;font-weight:600}
 .w{background:#fff;color:#0038FF}.o{border:1.5px solid rgba(255,255,255,.7);color:#fff;background:none}
-.stp{margin:10px 0 14px;padding-left:20px;line-height:1.6}.stp li{margin-bottom:4px}.btn.ig{background:#0038FF;color:#fff}.subf{display:flex;gap:8px;flex-wrap:wrap}.subf input{flex:1 1 200px;min-width:0;padding:13px 16px;border-radius:99px;border:1.5px solid #D5DEFF;font:inherit;color:#031447}.btn.w2{background:#0038FF;color:#fff}.subm{margin:8px 0 0;min-height:1.3em;font-size:14px}
+.stp strong,.stp a{font:inherit;font-weight:700;text-transform:none}.stp a{color:#0038FF}.stp{margin:10px 0 14px;padding-left:20px;line-height:1.6}.stp li{margin-bottom:4px}.btn.ig{background:#0038FF;color:#fff}.subf{display:flex;gap:8px;flex-wrap:wrap}.subf input{flex:1 1 200px;min-width:0;padding:13px 16px;border-radius:99px;border:1.5px solid #D5DEFF;font:inherit;color:#031447}.btn.w2{background:#0038FF;color:#fff}.subm{margin:8px 0 0;min-height:1.3em;font-size:14px}
 .in{animation:up .8s cubic-bezier(.2,.7,.2,1) both}.in:nth-child(2){animation-delay:.1s}.in:nth-child(3){animation-delay:.2s}.in:nth-child(4){animation-delay:.3s}.in:nth-child(5){animation-delay:.4s}
 @keyframes up{from{opacity:0;transform:translateY(18px)}}
 .u path{stroke-dasharray:300;stroke-dashoffset:300;animation:d 1.2s .5s ease forwards}@keyframes d{to{stroke-dashoffset:0}}
@@ -25,10 +25,10 @@ h1{font:700 clamp(54px,12vw,96px)/.92 'Barlow Condensed',sans-serif;text-transfo
 <div class="row"><span>Total pagado</span><strong id="t">—</strong></div>
 <div class="row"><span>Entrega estimada</span><strong id="e">—</strong></div>
 <div class="row"><span>Regalo</span><strong>Bolígrafo de gel blanco</strong></div></div>
-<div class="card in"><b>Gana un notebook gratis</b><ol class="stp"><li>Sigue a <a href="https://www.instagram.com/bluzzo.pe/" target="_blank" rel="noopener"><b>@bluzzo.pe</b></a> en Instagram.</li><li>Sube una historia con tu Bluzzo y etiquétanos.</li><li>Cada mes sorteamos un notebook. <b>Cada notebook que compraste es una oportunidad más.</b></li></ol><a class="btn ig" href="https://www.instagram.com/bluzzo.pe/" target="_blank" rel="noopener">Abrir Instagram</a></div>
+<div class="card in"><b>Gana un notebook gratis</b><ol class="stp"><li>Sigue a <a href="https://www.instagram.com/bluzzo.pe/" target="_blank" rel="noopener"><strong>@bluzzo.pe</strong></a> en Instagram.</li><li>Sube una historia con tu Bluzzo y etiquétanos.</li><li>Cada mes sorteamos un notebook. <strong>Cada notebook que compraste es una oportunidad más.</strong></li></ol><a class="btn ig" href="https://www.instagram.com/bluzzo.pe/" target="_blank" rel="noopener">Abrir Instagram</a></div>
 <div class="card in"><b>Entérate primero</b><p style="margin:8px 0 12px">Deja tu correo y te avisamos de promociones y nuevos drops.</p><form id="subF" class="subf" novalidate><input id="subE" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" aria-label="Tu correo"><button type="submit" class="btn w2">Suscribirme</button></form><p id="subM" role="status" class="subm"></p></div>
-<p class="in" id="p">Guarda tu referencia. Escríbenos por WhatsApp para confirmar tu dirección y recibir novedades de tu pedido.</p>
-<div class="btns in"><a class="btn w" id="wa" target="_blank" rel="noopener">Avisar por WhatsApp</a><button class="btn o" id="sh" type="button">Compartir Bluzzo</button><a class="btn o" href="/">Volver al inicio</a></div>
+<p class="in" id="p">Guarda tu referencia. Te avisaremos cuando tu pedido esté en camino.</p>
+<div class="btns in"><a class="btn w" href="/">Volver al inicio</a></div>
 </div>
 <script src="/track.js" defer></script>
 <script>
@@ -40,7 +40,5 @@ try{if(ref&&!sessionStorage.getItem('bz_p_'+ref)){sessionStorage.setItem('bz_p_'
 s('n',n||'—');s('t',t?'S/ '+Number(t).toFixed(2):'—');
 fetch('/api/config').then(function(r){if(!r.ok)throw 0;return r}).catch(function(){return fetch('/config.json')}).then(function(r){return r.json()}).then(function(c){
  s('e',c.entrega);
- document.getElementById('wa').href='https://wa.me/'+c.whatsapp+'?text='+encodeURIComponent('Hola, acabo de pagar mi Bluzzo. Referencia: '+ref+(n?' · '+n+' notebook(s)':'')+'. Quedo atento(a) a la coordinación de la entrega.');
 }).catch(function(){});
-document.getElementById('sh').onclick=function(){var d={title:'Bluzzo',text:'Tu idea sobre el blu. Mira este notebook blueprint.',url:location.origin};if(navigator.share)navigator.share(d).catch(function(){});else{navigator.clipboard&&navigator.clipboard.writeText(location.origin);this.textContent='Link copiado'}};
 </script></body></html>
