@@ -52,6 +52,7 @@
     requestAnimationFrame(function(){$('#cupBar').style.width=(AG?100:d.barra)+'%'});
     if(AG){var pr=$('#prow');if(pr)pr.style.display='none';$$('[data-add]').forEach(function(b){b.style.display='none'});
       b.classList.add('agotado');
+      $$('a[href$="#reserva"]').forEach(function(x){if(/separ/i.test(x.textContent))x.textContent='Avísame del '+(PR?'nuevo':'próximo')+' drop'});
       var h=$('.reserva h2');if(h)h.textContent=PR?'Nuevo drop pronto.':DC+' agotado.';
       var ld=$('.reserva p.lead');if(ld)ld.textContent=PR?'Estamos preparando el siguiente drop. Déjanos tu correo y te avisamos primero cuando abra.':'Gracias por llegar hasta aquí. Déjanos tu correo y te avisamos primero cuando abramos el próximo drop.';
       var l=$('#espL');if(l)l.textContent='Tu correo para avisarte del próximo drop';
