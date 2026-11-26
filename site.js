@@ -58,6 +58,17 @@
       var ei=$('#espIn');if(ei){ei.placeholder='tucorreo@ejemplo.com';ei.type='email'}
       var bs=$('.bar');if(bs)bs.style.display='none'}
   }).catch(function(){})}
+  // botón flotante de WhatsApp (dudas antes de comprar)
+  if(!/^\/(resena|admin)/.test(location.pathname)){fetch('/config.json').then(function(r){return r.json()}).then(function(c){if(!c.whatsapp)return;var a=d.createElement('a');a.className='wafab';a.target='_blank';a.rel='noopener';
+    a.href='https://wa.me/'+c.whatsapp+'?text='+encodeURIComponent('Hola, tengo una duda sobre Bluzzo.');a.setAttribute('aria-label','Escríbenos por WhatsApp');
+    a.innerHTML='<svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true"><path fill="#fff" d="M5 5h22a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H15l-7 6v-6H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><circle cx="10.500" cy="14" r="1.800" fill="#25D366"/><circle cx="16" cy="14" r="1.800" fill="#25D366"/><circle cx="21.500" cy="14" r="1.800" fill="#25D366"/></svg>';
+    d.body.appendChild(a)}).catch(function(){})}
+  // reseñas aprobadas desde el panel
+  var rv=$('#resenas');
+  if(rv){fetch('/api/resenas').then(function(r){return r.json()}).then(function(L){if(!L||!L.length)return;var g=$('#rgrid');
+    L.forEach(function(x){var c=d.createElement('div');c.className='rev';var s=d.createElement('div');s.className='st';s.textContent=new Array(x.estrellas+1).join('★')+new Array(6-x.estrellas).join('☆');c.appendChild(s);
+      var p=d.createElement('p');p.textContent=x.texto;c.appendChild(p);if(x.foto){var im=d.createElement('img');im.src=x.foto;im.loading='lazy';im.alt='Foto de '+x.nombre;c.appendChild(im)}
+      var n=d.createElement('b');n.textContent=x.nombre;c.appendChild(n);g.appendChild(c)});rv.hidden=false}).catch(function(){})}
   // comunidad: fotos subidas desde el panel (si no hay ninguna, la sección no se muestra)
   var cm=$('#comunidad');
   if(cm){fetch('/api/comunidad').then(function(r){return r.json()}).then(function(L){if(!L||!L.length)return;var g=$('#cgal');

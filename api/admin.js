@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
   if (!igual(req.headers['x-admin-key'] || '', pw)) return res.status(401).json({ error: 'clave' });
   try {
     if (req.method === 'GET') {
-      const [pedidos, espera, codigos, subs, sorEst, sorteos, reclamos, comunidad] = await Promise.all([
+      const [pedidos, espera, codigos, subs, sorEst, sorteos, reclamos, comunidad, resenas] = await Promise.all([
         db.q('bluzzo_pedidos?select=*&order=created_at.desc&limit=500'),
         db.q('bluzzo_espera?select=*&order=created_at.desc&limit=500'),
         db.q('bluzzo_codigos?select=*&order=created_at.desc'),
@@ -16,12 +16,15 @@ module.exports = async (req, res) => {
         db.q('bluzzo_sorteo_estado?select=*').catch(() => []),
         db.q('bluzzo_sorteos?select=*&order=created_at.desc&limit=100').catch(() => []),
         db.q('bluzzo_reclamos?select=*&order=created_at.desc&limit=200').catch(() => []),
-        db.q('bluzzo_comunidad?select=*&order=created_at.desc&limit=200').catch(() => [])
+        db.q('bluzzo_comunidad?select=*&order=created_at.desc&limit=200').catch(() => []),
+        db.q('bluzzo_resenas?select=*&order=created_at.desc&limit=200').catch(() => [])
       ]);
+      const mail = require('./_mail'), base = (cfg.siteUrl || '').replace(/\/$/, '');
+      pedidos.forEach((p) => { p.resena_url = base + '/resena?ref=' + encodeURIComponent(p.ref) + '&t=' + mail.firma('resena:' + p.ref); });
       const dr = await db.drop();
       const vivos = pedidos.filter(p => p.estado !== 'cancelado' && (p.drop_n || 1) === dr.n);
       return res.status(200).json({
-        pedidos, espera, codigos, drop: dr, reclamos, comunidad, suscriptores: subs, sorteo_estado: sorEst, sorteos,
+        pedidos, espera, codigos, drop: dr, reclamos, comunidad, resenas, suscriptores: subs, sorteo_estado: sorEst, sorteos,
         resumen: { pedidos: vivos.length, libros: vivos.reduce((a, p) => a + p.cantidad, 0), total: vivos.reduce((a, p) => a + Number(p.total), 0), cupos: dr.cupos }
       });
     }
@@ -104,6 +107,17 @@ module.exports = async (req, res) => {
         const lista = Array.from(new Set((b.solo === 'espera' ? [] : (subs || []).map((x) => x.correo)).concat((esp || []).map((x) => String(x.contacto).toLowerCase())))).filter((c) => c && !fuera.has(c));
         const r = await mail.lote(lista.map((to) => Object.assign({ to, subject: asunto }, mail.novedad(to, mensaje, b.cta))));
         return res.status(200).json(Object.assign({ total: lista.length }, r));
+      }
+      if (b.accion === 'resena_aprobar') {
+        await db.q('bluzzo_resenas?id=eq.' + encodeURIComponent(db.txt(b.id, 50)), { method: 'PATCH', prefer: 'return=minimal', body: { aprobada: !!b.aprobada } });
+        return res.status(200).json({ ok: true });
+      }
+      if (b.accion === 'resena_borrar') {
+        const id = encodeURIComponent(db.txt(b.id, 50));
+        const f = await db.q('bluzzo_resenas?select=ruta&id=eq.' + id);
+        await db.q('bluzzo_resenas?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
+        if (f && f[0] && f[0].ruta) await db.borrarObjeto('comunidad', f[0].ruta);
+        return res.status(200).json({ ok: true });
       }
       if (b.accion === 'codigo_activo') {
         await db.q('bluzzo_codigos?codigo=eq.' + encodeURIComponent(db.txt(b.codigo, 30)), { method: 'PATCH', prefer: 'return=minimal', body: { activo: !!b.activo } });

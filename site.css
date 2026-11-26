@@ -271,3 +271,5 @@ html,body{overflow-x:clip}
 .fsub input::placeholder{color:rgba(255,255,255,.6)}.fsub input:focus{outline:2px solid #fff;outline-offset:2px}
 .fsub .submsg{margin:10px 0 0;min-height:1.4em;font-size:14px}
 html{zoom:.9}
+
+.wafab{position:fixed;right:18px;bottom:18px;z-index:40;width:56px;height:56px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 10px 28px -8px rgba(3,20,71,.55);transition:transform .2s}.wafab:hover{transform:scale(1.07)}

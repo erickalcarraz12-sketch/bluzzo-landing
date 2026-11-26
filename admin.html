@@ -101,6 +101,7 @@ main{padding:28px clamp(16px,3vw,40px) 60px;max-width:1180px;width:100%}
   <button data-v="drop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7 5.6 12.2a7 7 0 1 0 12.8 0z"/></svg>Drop</button>
   <button data-v="codigos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L2 12V2h10l8.6 8.6a2 2 0 0 1 0 2.8z"/><circle cx="7" cy="7" r="1.5"/></svg>Códigos</button>
   <button data-v="comunidad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>Comunidad</button>
+  <button data-v="resenas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 2 3 6.500 7 .8-5.200 4.800 1.500 7L12 17.500 5.700 21l1.500-7L2 9.300l7-.8z"/></svg>Reseñas<span class="n" id="nRs"></span></button>
   <button data-v="reclamos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Reclamos<span class="n" id="nR"></span></button>
   <button data-v="contactos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>Contactos<span class="n" id="nC"></span></button>
  </nav>
@@ -115,6 +116,7 @@ main{padding:28px clamp(16px,3vw,40px) 60px;max-width:1180px;width:100%}
  <section class="view" id="v-drop"></section>
  <section class="view" id="v-codigos"></section>
  <section class="view" id="v-comunidad"></section>
+ <section class="view" id="v-resenas"></section>
  <section class="view" id="v-reclamos"></section>
  <section class="view" id="v-contactos"></section>
 </main></div>
@@ -137,17 +139,17 @@ function nextState(e){return{pagado:'enviado',enviado:'entregado'}[e]}
 var NS={pagado:'Marcar enviado',enviado:'Marcar entregado'};
 
 /* ---------- vistas ---------- */
-var TITLES={resumen:['Resumen','Cómo va tu primer drop.'],pedidos:['Pedidos','Gestiona, contacta y envía.'],sorteo:['Sorteo mensual','Elige al ganador del mes.'],drop:['Drop','Cupos, precio y nuevos lanzamientos.'],comunidad:['Comunidad','Fotos de tus clientes en la web.'],reclamos:['Libro de Reclamaciones','Reclamos y quejas de tus clientes.'],codigos:['Códigos','Descuentos para tus clientes.'],contactos:['Contactos','Suscriptores y lista de espera.']};
+var TITLES={resumen:['Resumen','Cómo va tu primer drop.'],pedidos:['Pedidos','Gestiona, contacta y envía.'],sorteo:['Sorteo mensual','Elige al ganador del mes.'],drop:['Drop','Cupos, precio y nuevos lanzamientos.'],resenas:['Reseñas','Opiniones de tus clientes: tú decides cuáles se muestran.'],comunidad:['Comunidad','Fotos de tus clientes en la web.'],reclamos:['Libro de Reclamaciones','Reclamos y quejas de tus clientes.'],codigos:['Códigos','Descuentos para tus clientes.'],contactos:['Contactos','Suscriptores y lista de espera.']};
 function go(v){V=v;document.querySelectorAll('.view').forEach(function(x){x.classList.toggle('on',x.id==='v-'+v)});document.querySelectorAll('#nav button').forEach(function(b){b.classList.toggle('on',b.dataset.v===v)});$('#vt').textContent=TITLES[v][0];$('#vs').textContent=TITLES[v][1];render();window.scrollTo(0,0)}
 function vivos(){return D.pedidos.filter(function(p){return p.estado!=='cancelado'})}
-function render(){if(!D)return;setTimeout(pushUi,0);$('#nP').textContent=D.pedidos.filter(function(p){return p.estado==='pagado'}).length||'';$('#nR').textContent=(D.reclamos||[]).filter(function(r){return r.estado==='pendiente'}).length||'';$('#nC').textContent=(D.suscriptores.length+D.espera.length)||'';({resumen:rResumen,pedidos:rPedidos,sorteo:rSorteo,drop:rDrop,comunidad:rComunidad,reclamos:rReclamos,codigos:rCodigos,contactos:rContactos})[V]()}
+function render(){if(!D)return;setTimeout(pushUi,0);$('#nP').textContent=D.pedidos.filter(function(p){return p.estado==='pagado'}).length||'';$('#nRs').textContent=(D.resenas||[]).filter(function(r){return !r.aprobada}).length||'';$('#nR').textContent=(D.reclamos||[]).filter(function(r){return r.estado==='pendiente'}).length||'';$('#nC').textContent=(D.suscriptores.length+D.espera.length)||'';({resumen:rResumen,pedidos:rPedidos,sorteo:rSorteo,drop:rDrop,comunidad:rComunidad,resenas:rResenas,reclamos:rReclamos,codigos:rCodigos,contactos:rContactos})[V]()}
 
 function ordRow(p){var nx=NS[p.estado];
  return '<div class="ord '+p.estado+'"><div><div class="ref">'+esc(p.ref)+'</div><div class="dt">'+f(p.created_at)+'</div><div class="mini"><span class="pill '+p.estado+'">'+p.estado+'</span></div></div>'+
  '<div class="who"><b>'+esc(p.nombre)+'</b><small>'+esc(p.celular)+' · '+esc(p.email)+'</small><small>'+esc(p.zona)+' — '+esc(p.direccion)+(p.ciudad?', '+esc(p.ciudad):'')+'</small>'+(p.notas?'<span class="note">“'+esc(p.notas)+'”</span>':'')+'</div>'+
  '<div class="tot">'+money(p.total)+'<small>'+p.cantidad+' notebook'+(p.cantidad>1?'s':'')+(p.codigo?' · '+esc(p.codigo):'')+'</small></div>'+
  '<div class="act">'+(nx?'<button class="b s ok" data-adv="'+p.id+'" data-to="'+nextState(p.estado)+'">'+nx+'</button>':'')+
- '<a class="b s g" target="_blank" rel="noopener" href="'+wa(p.celular,'Hola '+p.nombre+', te escribo por tu pedido Bluzzo '+p.ref+'.')+'">WhatsApp</a>'+
+ '<a class="b s g" target="_blank" rel="noopener" href="'+wa(p.celular,'Hola '+p.nombre+', te escribo por tu pedido Bluzzo '+p.ref+'.')+'">WhatsApp</a>'+(p.estado==='entregado'?'<a class="b s ok" target="_blank" rel="noopener" href="'+wa(p.celular,'Hola '+String(p.nombre).split(" ")[0]+', ¡gracias por tu Bluzzo! ¿Nos cuentas qué tal te fue? Deja tu reseña aquí (toma 1 minuto): '+p.resena_url)+'">Pedir reseña</a>':'')+'<button class="b s g" data-et="'+p.id+'">Etiqueta</button>'+
  '<button class="b s g" data-cp="'+esc(p.nombre+'\n'+p.celular+'\n'+p.direccion+(p.ciudad?', '+p.ciudad:'')+'\n'+p.zona)+'">Copiar envío</button>'+
  (p.estado!=='cancelado'?'<button class="b s bad" data-cancel="'+p.id+'" data-r="'+esc(p.ref)+'">Cancelar</button>':'<button class="b s g" data-adv="'+p.id+'" data-to="pagado">Reactivar</button>')+'</div></div>'}
 
@@ -159,14 +161,14 @@ function rResumen(){var r=D.resumen,pct=Math.min(100,Math.round(r.libros/r.cupos
  '<div class="k"><small>Cobrado</small><b>'+money(r.total)+'</b><span>'+r.pedidos+' pedido'+(r.pedidos==1?'':'s')+'</span></div>'+
  '<div class="k"><small>Por enviar</small><b>'+porEnv+'</b><span>pedidos pagados sin enviar</span></div>'+
  '<div class="k"><small>Hoy</small><b>'+hoy+'</b><span>pedidos nuevos</span></div></div>'+
- chart30()+'<div class="grid2"><div class="card"><h2>Por enviar <button class="b s g" data-go="pedidos">Ver todos</button></h2>'+(pend.map(ordRow).join('')||'<div class="empty">Nada pendiente. ¡Todo al día! 🎉</div>')+'</div>'+
+ chart30()+zonaReporte()+'<div class="grid2"><div class="card"><h2>Por enviar <button class="b s g" data-go="pedidos">Ver todos</button></h2>'+(pend.map(ordRow).join('')||'<div class="empty">Nada pendiente. ¡Todo al día! 🎉</div>')+'</div>'+
  '<div><div class="card"><h2>Tu comunidad</h2><div class="crow"><span>Suscriptores</span><b>'+D.suscriptores.length+'</b></div><div class="crow"><span>Lista de espera</span><b>'+D.espera.length+'</b></div><div class="crow"><span>Códigos activos</span><b>'+D.codigos.filter(function(c){return c.activo}).length+'</b></div></div>'+
  '<div class="card" id="pushBox"><h2>Notificaciones en tu celular</h2><div id="pushUi" class="hint">Revisando…</div></div><div class="card"><h2>Atajos</h2><div style="display:flex;flex-direction:column;gap:8px"><button class="b" data-go="sorteo">🎁 Hacer el sorteo del mes</button><button class="b g" id="qm">Copiar todos los correos</button><button class="b g" id="qe">Exportar pedidos (CSV)</button></div></div></div></div>'}
 
 function filtrados(){var q=PF.q.toLowerCase();return D.pedidos.filter(function(p){return(PF.e==='todos'||p.estado===PF.e)&&(!q||[p.ref,p.nombre,p.celular,p.email,p.direccion].join(' ').toLowerCase().indexOf(q)>-1)})}
 function rPedidos(){var c={todos:D.pedidos.length};['pagado','enviado','entregado','cancelado'].forEach(function(e){c[e]=D.pedidos.filter(function(p){return p.estado===e}).length});
  var l=filtrados();
- $('#v-pedidos').innerHTML='<div class="card"><div class="tools"><input class="grow" id="pq" placeholder="Buscar por nombre, referencia, celular o correo" value="'+esc(PF.q)+'"><button class="b g" id="qe">Exportar CSV</button></div>'+
+ $('#v-pedidos').innerHTML='<div class="card"><div class="tools"><input class="grow" id="pq" placeholder="Buscar por nombre, referencia, celular o correo" value="'+esc(PF.q)+'"><button class="b g" id="etp">Imprimir etiquetas (pagados)</button><button class="b g" id="qe">Exportar CSV</button></div>'+
  '<div class="chips">'+['todos','pagado','enviado','entregado','cancelado'].map(function(e){return '<button class="chip'+(PF.e===e?' on':'')+'" data-e="'+e+'">'+(e==='todos'?'Todos':e[0].toUpperCase()+e.slice(1))+'<em>'+c[e]+'</em></button>'}).join('')+'</div>'+
  '<div id="plist">'+(l.map(ordRow).join('')||'<div class="empty">'+(D.pedidos.length?'No hay pedidos con ese filtro.':'Aún no hay pedidos. Cuando alguien pague, aparecerá aquí.')+'</div>')+'</div></div>';
  var i=$('#pq');i.oninput=function(){PF.q=i.value;var pos=i.selectionStart;$('#plist').innerHTML=(filtrados().map(ordRow).join('')||'<div class="empty">No hay pedidos con ese filtro.</div>')}}
@@ -183,6 +185,26 @@ function chart30(){var dias=[],mp={};for(var i=29;i>=0;i--){var d=new Date();d.s
  vivos().forEach(function(p){var k=new Date(p.created_at).toLocaleDateString('en-CA',{timeZone:'America/Lima'});if(k in mp)mp[k]+=Number(p.total)});
  var mx=Math.max.apply(null,dias.map(function(k){return mp[k]}))||1,tot=dias.reduce(function(s,k){return s+mp[k]},0),w=600,h=120,bw=w/30;
  return '<div class="card"><h2>Ventas · últimos 30 días <small style="font-weight:400;color:var(--tx2)">'+money(tot)+'</small></h2><svg viewBox="0 0 '+w+' '+(h+18)+'" style="width:100%;height:auto" role="img" aria-label="Ventas por día">'+dias.map(function(k,i){var v=mp[k],bh=Math.round(v/mx*h);return '<rect x="'+(i*bw+2)+'" y="'+(h-bh)+'" width="'+(bw-4)+'" height="'+Math.max(bh,v?2:1)+'" rx="2" fill="'+(v?'#1F3FE0':'#d5dbef')+'"><title>'+k+': '+money(v)+'</title></rect>'}).join('')+'<text x="0" y="'+(h+14)+'" font-size="10" fill="#6b7592">'+dias[0].slice(5)+'</text><text x="'+w+'" y="'+(h+14)+'" font-size="10" text-anchor="end" fill="#6b7592">'+dias[29].slice(5)+'</text></svg></div>'}
+
+function rResenas(){var L=D.resenas||[];
+ $('#v-resenas').innerHTML='<div class="card"><div class="hint">Cuando un pedido esté entregado, en Pedidos usa «Pedir reseña»: te arma un mensaje de WhatsApp con el enlace personal del cliente. Su reseña llega aquí y solo se publica si la apruebas.</div></div>'+
+ '<div class="card"><h2>Reseñas ('+L.length+')</h2>'+(L.map(function(r){return '<div class="crow" style="align-items:flex-start;padding:14px 4px'+(r.aprobada?'':';background:#fffaf0')+'"><div style="flex:1 1 300px"><b>'+esc(r.nombre)+'</b> <span style="color:#F5A623">'+new Array(r.estrellas+1).join('★')+'</span> <span class="pill '+(r.aprobada?'entregado':'pagado')+'">'+(r.aprobada?'publicada':'pendiente')+'</span><p style="margin:6px 0">'+esc(r.texto)+'</p><small>'+esc(r.ref)+' · '+f(r.created_at)+'</small>'+(r.foto?'<br><img src="'+esc(r.foto)+'" style="width:120px;border-radius:10px;margin-top:6px">':'')+'</div><div style="display:flex;gap:6px;flex-direction:column"><button class="b s '+(r.aprobada?'g':'ok')+'" data-ra="'+esc(r.id)+'" data-ap="'+(r.aprobada?0:1)+'">'+(r.aprobada?'Ocultar':'Publicar')+'</button><button class="b s bad" data-rd="'+esc(r.id)+'">Borrar</button></div></div>'}).join('')||'<div class="empty">Aún no hay reseñas.</div>')+'</div>'}
+
+/* ---------- etiquetas de envío ---------- */
+function etiquetas(L){if(!L.length)return toast('No hay pedidos para imprimir');
+ var w=window.open('','_blank');if(!w)return toast('Permite las ventanas emergentes para imprimir');
+ var h=L.map(function(p){var prov=/provincia/i.test(p.zona||'');
+  return '<section><div class="top"><b>BLUZZO</b><span>'+esc(p.ref)+'</span></div><div class="lb">DESTINATARIO</div><div class="nm">'+esc(p.nombre)+'</div><div class="tel">Cel. '+esc(p.celular)+'</div>'+
+  '<div class="lb">'+(prov?'ENTREGA EN AGENCIA SHALOM':'DIRECCIÓN DE ENTREGA')+'</div><div class="ad">'+esc(p.direccion)+(p.ciudad?'<br>'+esc(p.ciudad):'')+'</div><div class="zn">'+esc(p.zona)+'</div>'+
+  (prov?'<div class="dni">DNI de quien recoge: ______________________</div>':'')+
+  (p.notas?'<div class="nt">Nota: '+esc(p.notas)+'</div>':'')+'<div class="ft">'+p.cantidad+' × Bluzzo Blueprint Notebook A5 · Frágil: no doblar</div></section>'}).join('');
+ w.document.write('<!doctype html><meta charset="utf-8"><title>Etiquetas Bluzzo</title><style>@page{size:100mm 150mm;margin:0}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;color:#031447}section{width:100mm;height:150mm;padding:8mm;page-break-after:always;border:2px solid #031447;display:flex;flex-direction:column;gap:2mm}.top{display:flex;justify-content:space-between;align-items:center;background:#0038FF;color:#fff;margin:-8mm -8mm 3mm;padding:5mm 8mm}.top b{font-size:22px;letter-spacing:2px}.top span{font-size:13px;font-weight:700}.lb{font-size:10px;letter-spacing:1.500px;color:#0038FF;font-weight:700;margin-top:3mm}.nm{font-size:22px;font-weight:800;line-height:1.1}.tel{font-size:16px}.ad{font-size:17px;line-height:1.3;font-weight:600}.zn{font-size:13px;color:#51608F}.dni{margin-top:4mm;font-size:14px;font-weight:700}.nt{font-size:12px;border:1px dashed #51608F;padding:2mm;margin-top:2mm}.ft{margin-top:auto;font-size:11px;color:#51608F;border-top:1px solid #D5DEFA;padding-top:2mm}@media screen{body{background:#eef2ff;padding:10px}section{background:#fff;margin:0 auto 14px}}</style>'+h+'<script>window.onload=function(){setTimeout(function(){print()},300)}<\/script>');w.document.close()}
+function zonaReporte(){var V2=vivos(),by={},ci={};V2.forEach(function(p){var z=/provincia/i.test(p.zona||'')?'Provincias':'Lima';var x=by[z]||(by[z]={n:z,p:0,l:0,t:0});x.p++;x.l+=p.cantidad;x.t+=Number(p.total);
+  var c=String(p.ciudad||'').split(',').pop().trim()||'(sin dato)';c=c.replace(/\s+/g,' ');var k=c.toLowerCase(),y=ci[k]||(ci[k]={n:c,p:0,l:0});y.p++;y.l+=p.cantidad});
+ var Z=Object.keys(by).map(function(k){return by[k]}),tot=V2.length||1,top=Object.keys(ci).map(function(k){return ci[k]}).sort(function(a,b){return b.p-a.p}).slice(0,6);
+ if(!V2.length)return '<div class="card"><h2>Ventas por zona</h2><div class="empty">Aún no hay ventas.</div></div>';
+ return '<div class="card"><h2>Ventas por zona</h2>'+Z.map(function(x){var pc=Math.round(x.p/tot*100);return '<div class="crow"><div style="flex:1 1 200px"><b>'+x.n+'</b> <small>'+x.p+' pedido'+(x.p==1?'':'s')+' · '+x.l+' libros · '+money(x.t)+'</small><div class="bar"><i style="width:'+pc+'%"></i></div></div><b>'+pc+'%</b></div>'}).join('')+
+ '<div class="hint" style="margin-top:10px"><b>Distritos / ciudades con más pedidos:</b><br>'+top.map(function(c){return esc(c.n)+' ('+c.p+')'}).join(' · ')+'</div></div>'}
 function rContactos(){var L=CT==='subs'?D.suscriptores:D.espera;
  $('#v-contactos').innerHTML='<div class="card"><div class="tools"><div class="seg"><button data-ct="subs" class="'+(CT==='subs'?'on':'')+'">Suscriptores ('+D.suscriptores.length+')</button><button data-ct="esp" class="'+(CT==='esp'?'on':'')+'">Lista de espera ('+D.espera.length+')</button></div><span class="grow"></span><button class="b g" id="cm2">Copiar correos</button><button class="b g" id="cx">Exportar CSV</button></div>'+
  (L.map(function(e){var c=CT==='subs'?e.correo:e.contacto,w=CT==='esp'&&e.tipo==='whatsapp';return '<div class="crow"><div><b>'+esc(c)+'</b><br><small>'+f(e.created_at)+(CT==='subs'?(e.origen?' · desde '+esc(e.origen):''):' · '+e.tipo)+'</small></div><div style="display:flex;gap:8px">'+(w?'<a class="b s g" target="_blank" rel="noopener" href="'+wa(c)+'">WhatsApp</a>':'')+'<button class="b s g" data-cp="'+esc(c)+'">Copiar</button></div></div>'}).join('')||'<div class="empty">Aún no hay '+(CT==='subs'?'suscriptores':'nadie en espera')+'.</div>')+'</div>'}
@@ -281,6 +303,11 @@ document.addEventListener('click',function(e){var t=e.target.closest('button,a')
   else{var n=(function(){var s={};if($('#bs').value!=='espera')D.suscriptores.forEach(function(x){s[x.correo]=1});D.espera.forEach(function(x){if(x.tipo==='correo')s[String(x.contacto).toLowerCase()]=1});return Object.keys(s).length})();
    if(!n)return toast('No hay correos a quién enviar');if(!confirm('¿Enviar este correo a unas '+n+' personas? No se puede deshacer.'))return}
   t.disabled=true;return api('POST',bd).then(function(j){toast(pr?'Prueba enviada':'Enviado a '+j.enviados+' personas'+(j.fallidos?' ('+j.fallidos+' fallaron)':''))}).catch(function(e){toast(/config/.test(String(e&&e.message||e))?'El correo aún no está configurado (Resend)':'No se pudo enviar')}).then(function(){t.disabled=false})}
+
+ if(d.et){var po=D.pedidos.filter(function(x){return String(x.id)===d.et});return etiquetas(po)}
+ if(t.id==='etp')return etiquetas(D.pedidos.filter(function(x){return x.estado==='pagado'}));
+ if(d.ra)return act({accion:'resena_aprobar',id:d.ra,aprobada:d.ap==='1'},d.ap==='1'?'Reseña publicada':'Reseña oculta');
+ if(d.rd){if(confirm('¿Borrar esta reseña definitivamente?'))act({accion:'resena_borrar',id:d.rd},'Reseña borrada');return}
  if(t.id==='dpa'){t.classList.toggle('on');return}
  if(t.id==='dsave')return act(Object.assign({accion:'drop_guardar'},dropBody('d')),'Drop actualizado');
  if(t.id==='dnew'){if(confirm('¿Cerrar el drop '+D.drop.n+' y abrir el drop '+(D.drop.n+1)+'? Los cupos empiezan en cero.'))act(Object.assign({accion:'drop_nuevo'},dropBody('n')),'¡Drop '+(D.drop.n+1)+' abierto!');return}
