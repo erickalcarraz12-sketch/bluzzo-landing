@@ -6,6 +6,6 @@ module.exports = async (req, res) => {
   if (!db.ok()) return res.status(200).json({ ok: false, mensaje: 'Los códigos aún no están disponibles.' });
   const b = db.body(req); const qty = parseInt(b.qty, 10);
   if (!(qty >= 1 && qty <= cfg.maxPorPedido)) return res.status(400).json({ error: 'qty' });
-  try { const r = await db.aplicarCodigo(b.codigo, cfg.precio * qty); res.status(200).json(r); }
+  try { const r = await db.aplicarCodigo(b.codigo, db.subtotal(qty)); res.status(200).json(r); }
   catch (e) { res.status(500).json({ ok: false, mensaje: 'No pudimos validar el código.' }); }
 };

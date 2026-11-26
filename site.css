@@ -35,7 +35,7 @@ a{color:inherit;text-decoration:none}
 @media (max-width:720px){.nav .links a:not(.btn){display:none}}
 
 /* hero */
-.hero{position:relative;color:#fff;padding:calc(76px + 28px) 0 72px;overflow:hidden;min-height:min(100svh,920px);display:flex;align-items:center}
+.hero{position:relative;color:#fff;padding:calc(88px + 28px) 0 72px;overflow:hidden;min-height:min(100svh,920px);display:flex;align-items:center}
 .hero .grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:clamp(16px,3vw,48px);align-items:center;width:100%}
 .hero h1{margin:0;font-size:clamp(60px,8.6vw,124px)}
 .hero h1 .ln{display:block;white-space:nowrap;overflow:hidden;padding:0 .08em .06em 0;margin-bottom:-.06em}
@@ -236,3 +236,8 @@ html,body{overflow-x:clip}
 .espera{margin-top:30px;max-width:30em}.espera label{display:block;font-weight:600;color:var(--marino);margin-bottom:10px}
 .espera div{display:flex;gap:8px;flex-wrap:wrap}.espera input{flex:1;min-width:190px;padding:13px 16px;border:1.5px solid #C5D2F8;border-radius:999px;font:inherit;background:#fff}
 .espera input:focus{outline:2px solid var(--azul);outline-offset:1px}.espera p{margin:10px 0 0;font-size:14px;color:#c0152f;min-height:0}.espera p.ok{color:#0a8a4a}.espera p:empty{display:none}
+/* logo del menú más grande */
+.navlogo{height:56px;width:auto;display:block;transition:height .35s var(--ease)}
+.nav .in{height:88px}
+.nav.solid .in{height:68px}.nav.solid .navlogo{height:44px}
+@media (max-width:720px){.navlogo{height:42px}.nav .in{height:72px}.nav.solid .in{height:60px}.nav.solid .navlogo{height:36px}}

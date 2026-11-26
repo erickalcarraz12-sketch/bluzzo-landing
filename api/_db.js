@@ -15,6 +15,8 @@ exports.q = async (path, opt = {}) => {
   return d;
 };
 exports.body = (req) => { let b = req.body; if (typeof b === 'string') { try { b = JSON.parse(b); } catch (e) { b = {}; } } return b || {}; };
+// Subtotal con promo: cada par cuesta cfg.precioPar, el impar suelto cuesta cfg.precio
+exports.subtotal = (qty) => Math.floor(qty / 2) * (cfg.precioPar || cfg.precio * 2) + (qty % 2) * cfg.precio;
 exports.txt = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
 
 // Cupos vendidos (sin cancelados)

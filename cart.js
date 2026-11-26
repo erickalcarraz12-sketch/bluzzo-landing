@@ -1,5 +1,5 @@
 (function(){
-  var CFG={producto:'Bluzzo Blueprint Notebook A5',precio:79,maxPorPedido:5,
+  var CFG={producto:'Bluzzo Blueprint Notebook A5',precio:79,precioPar:145,maxPorPedido:5,
     envio:{lima:{nombre:'Lima Metropolitana',costo:10},provincia:{nombre:'Provincias (agencia)',costo:18}},
     entrega:'mediados de enero de 2027',whatsapp:'51926410751',culqiPublicKey:''};
   var KEY='bluzzo_cart_v1',qty=0,zona='lima',busy=false,cod=null;
@@ -8,25 +8,29 @@
   function save(){try{localStorage.setItem(KEY,JSON.stringify({qty:qty,zona:zona}))}catch(e){}}
   function money(n){return 'S/ '+(n%1?n.toFixed(2):n)}
   var picker=1;
+  function sub(q){return Math.floor(q/2)*(CFG.precioPar||CFG.precio*2)+(q%2)*CFG.precio}
+  function ahorro(q){return CFG.precio*q-sub(q)}
   function fillStatic(){
     $$('[data-price]').forEach(function(e){e.textContent=money(CFG.precio)});
+    $$('[data-par]').forEach(function(e){e.textContent=money(CFG.precioPar)});
+    $$('[data-ahorro]').forEach(function(e){e.textContent=money(2*CFG.precio-CFG.precioPar)});
     $$('[data-entrega]').forEach(function(e){e.textContent=CFG.entrega});
     $$('[data-envio-lima]').forEach(function(e){e.textContent=money(CFG.envio.lima.costo)});
     $$('[data-envio-prov]').forEach(function(e){e.textContent=money(CFG.envio.provincia.costo)});
   }
   function shipCost(){return CFG.envio[zona].costo}
-  function disc(){if(!cod)return 0;var st=CFG.precio*qty,d=cod.tipo==='porcentaje'?st*cod.valor/100:cod.valor;return Math.min(Math.round(d*100)/100,st)}
-  function total(){return Math.round((CFG.precio*qty-disc()+shipCost())*100)/100}
+  function disc(){if(!cod)return 0;var st=sub(qty),d=cod.tipo==='porcentaje'?st*cod.valor/100:cod.valor;return Math.min(Math.round(d*100)/100,st)}
+  function total(){return Math.round((sub(qty)-disc()+shipCost())*100)/100}
   function render(){
     var cb=$('.cartbtn');if(cb){cb.classList.toggle('has',qty>0);$('.cnt',cb).textContent=qty}
-    var pq=$('#pq');if(pq){pq.textContent=picker;$('#pqm').disabled=picker<=1;$('#pqp').disabled=picker>=CFG.maxPorPedido}
+    var pq=$('#pq');if(pq){pq.textContent=picker;var pt=$('#ptot');if(pt){pt.textContent=picker>=2?'Tu selección: '+money(sub(picker))+(ahorro(picker)>0?' · ahorras '+money(ahorro(picker)):''):''}$('#pqm').disabled=picker<=1;$('#pqp').disabled=picker>=CFG.maxPorPedido}
     var body=$('#cartBody'),foot=$('#cartFoot');if(!body)return;
     if(!qty){body.innerHTML='<div class="empty"><div class="disp" style="font-size:28px;color:#0038FF;font-weight:700">Tu carrito está vacío</div><p>Agrega tu Bluzzo y recibe un bolígrafo blanco de regalo.</p><a href="#reserva" class="btn" style="background:#0038FF;color:#fff" data-cart-close>Ver el notebook</a></div>';foot.style.display='none';return}
     foot.style.display='flex';
     var z='';Object.keys(CFG.envio).forEach(function(k){var e=CFG.envio[k];z+='<label class="zn'+(k===zona?' on':'')+'"><span><input type="radio" name="zona" value="'+k+'"'+(k===zona?' checked':'')+'>'+e.nombre+'</span><b>'+money(e.costo)+'</b></label>'});
     var keep={};$$('#cartForm [name]').forEach(function(i){if(i.type!=='radio')keep[i.name]=i.value});
     body.innerHTML=
-      '<div class="ln"><div class="th"></div><div class="in"><b>'+CFG.producto+'</b><small>Tapa dura azul · hojas lisas azul real</small><div style="margin-top:8px;display:flex;width:max-content" class="stp"><button type="button" data-q="-1" aria-label="Menos">−</button><span>'+qty+'</span><button type="button" data-q="1" aria-label="Más"'+(qty>=CFG.maxPorPedido?' disabled':'')+'>+</button></div><button class="lnr" type="button" data-q="-99">Quitar</button></div><div class="pr">'+money(CFG.precio*qty)+'</div></div>'+
+      '<div class="ln"><div class="th"></div><div class="in"><b>'+CFG.producto+'</b><small>Tapa dura azul · hojas lisas azul real'+(ahorro(qty)>0?'</small><small style="color:#0038FF;font-weight:600">Promo 2 por '+money(CFG.precioPar)+' · ahorras '+money(ahorro(qty)):'')+'</small><div style="margin-top:8px;display:flex;width:max-content" class="stp"><button type="button" data-q="-1" aria-label="Menos">−</button><span>'+qty+'</span><button type="button" data-q="1" aria-label="Más"'+(qty>=CFG.maxPorPedido?' disabled':'')+'>+</button></div><button class="lnr" type="button" data-q="-99">Quitar</button></div><div class="pr">'+money(sub(qty))+'</div></div>'+
       '<div class="ln" style="background:#EEF2FF;border-color:#EEF2FF"><div class="in"><b>Bolígrafo de gel blanco × '+qty+'</b><small>De regalo con tu notebook</small></div><div class="pr" style="color:#0038FF">Gratis</div></div>'+
       '<form id="cartForm" novalidate><fieldset><legend>Envío</legend>'+z+'</fieldset>'+
       '<fieldset style="margin-top:18px"><legend>Tus datos</legend>'+
@@ -36,7 +40,7 @@
       '<label class="f">Distrito y ciudad<input type="text" name="ciudad" autocomplete="address-level2"></label>'+
       '<label class="f">Notas (opcional)<textarea name="notas" rows="2"></textarea></label></fieldset></form>';
     Object.keys(keep).forEach(function(n){var i=$('#cartForm [name="'+n+'"]');if(i)i.value=keep[n]});
-    $('#tSub').textContent=money(CFG.precio*qty);$('#tEnv').textContent=money(shipCost());$('#tTot').textContent=money(total());
+    $('#tSub').textContent=money(sub(qty));$('#tEnv').textContent=money(shipCost());$('#tTot').textContent=money(total());
     var dr=$('#tDescRow');if(dr){dr.style.display=cod?'flex':'none';if(cod){$('#tDescL').textContent='Descuento ('+cod.codigo+')';$('#tDesc').textContent='− '+money(disc())}}
     var ci=$('#codeIn');if(ci&&cod){ci.value=cod.codigo}
   }

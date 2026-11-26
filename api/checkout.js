@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
   if (!token || !email || !(qty >= 1 && qty <= cfg.maxPorPedido) || !zona) return res.status(400).json({ error: 'pedido_invalido' });
   if (!nombre || cel.length < 9 || !dir) return res.status(400).json({ error: 'datos_incompletos' });
 
-  const subtotal = cfg.precio * qty;
+  const subtotal = db.subtotal(qty);
   let descuento = 0, codigo = '';
   if (db.ok()) {
     try {
