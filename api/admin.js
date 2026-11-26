@@ -89,6 +89,22 @@ module.exports = async (req, res) => {
         if (f && f[0]) await db.borrarObjeto('comunidad', f[0].ruta);
         return res.status(200).json({ ok: true });
       }
+      if (b.accion === 'difundir') {
+        const mail = require('./_mail');
+        const asunto = db.txt(b.asunto, 120), mensaje = db.txt(b.mensaje, 3000);
+        if (!asunto || !mensaje) return res.status(400).json({ error: 'faltan_datos' });
+        if (!mail.ok()) return res.status(501).json({ error: 'correo_no_configurado' });
+        if (b.prueba) {
+          const to = db.txt(b.prueba, 120).toLowerCase();
+          const r = await mail.lote([Object.assign({ to, subject: '[Prueba] ' + asunto }, mail.novedad(to, mensaje, b.cta))]);
+          return res.status(200).json(r);
+        }
+        const [subs, esp, bajas] = await Promise.all([db.q('bluzzo_suscriptores?select=correo&limit=5000'), db.q('bluzzo_espera?select=contacto&tipo=eq.correo&limit=5000'), db.q('bluzzo_bajas?select=correo&limit=5000')]);
+        const fuera = new Set((bajas || []).map((x) => x.correo));
+        const lista = Array.from(new Set((b.solo === 'espera' ? [] : (subs || []).map((x) => x.correo)).concat((esp || []).map((x) => String(x.contacto).toLowerCase())))).filter((c) => c && !fuera.has(c));
+        const r = await mail.lote(lista.map((to) => Object.assign({ to, subject: asunto }, mail.novedad(to, mensaje, b.cta))));
+        return res.status(200).json(Object.assign({ total: lista.length }, r));
+      }
       if (b.accion === 'codigo_activo') {
         await db.q('bluzzo_codigos?codigo=eq.' + encodeURIComponent(db.txt(b.codigo, 30)), { method: 'PATCH', prefer: 'return=minimal', body: { activo: !!b.activo } });
         return res.status(200).json({ ok: true });

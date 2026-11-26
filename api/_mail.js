@@ -47,3 +47,37 @@ exports.confirmacionEspera = () => ({
 });
 
 exports.wrapPublic = (inner) => wrap(inner);
+
+// ---- Boletín: bienvenida y avisos masivos, con enlace de baja ----
+const crypto = require('crypto');
+const BASE = (cfg.siteUrl || 'https://bluzzo-toketap.vercel.app').replace(/\/$/, '');
+const firma = (c) => crypto.createHmac('sha256', process.env.SUPABASE_SERVICE_KEY || 'x').update(String(c).toLowerCase()).digest('hex').slice(0, 32);
+exports.firma = firma;
+exports.bajaUrl = (c) => BASE + '/api/baja?c=' + encodeURIComponent(c) + '&t=' + firma(c);
+const pie = (c) => `<p style="text-align:center;font-size:12px;color:#51608F;margin:6px 0 0">Recibes este correo porque te suscribiste en Bluzzo. <a href="${exports.bajaUrl(c)}" style="color:#51608F">Darme de baja</a></p>`;
+
+exports.bienvenida = (c) => ({
+  subject: 'Bienvenido a Bluzzo',
+  html: wrap(`<h2 style="margin:0 0 6px;font-size:24px">¡Ya eres parte de Bluzzo!</h2>
+<p style="margin:0 0 14px">Gracias por suscribirte. Te escribiremos cuando abramos un nuevo drop, haya novedades o promociones, y para el sorteo mensual de <b>@bluzzo.pe</b>.</p>
+<a href="${BASE}/notebook" style="display:inline-block;background:#0038FF;color:#fff;text-decoration:none;padding:12px 22px;border-radius:99px;font-weight:700">Ver el notebook</a>`) + pie(c)
+});
+
+exports.novedad = (c, mensaje, cta) => ({
+  html: wrap(String(mensaje).split(/\n{2,}/).map((p) => '<p style="margin:0 0 14px">' + esc(p).replace(/\n/g, '<br>') + '</p>').join('') +
+    `<a href="${BASE}${cta || '/notebook'}" style="display:inline-block;background:#0038FF;color:#fff;text-decoration:none;padding:12px 22px;border-radius:99px;font-weight:700">Ver el notebook</a>`) + pie(c)
+});
+
+// Envío por lotes (Resend /emails/batch, hasta 100 por llamada)
+exports.lote = async (items) => {
+  if (!exports.ok()) return { enviados: 0, fallidos: items.length, sinConfig: true };
+  let ok = 0, mal = 0;
+  for (let i = 0; i < items.length; i += 100) {
+    const parte = items.slice(i, i + 100);
+    try {
+      const r = await fetch('https://api.resend.com/emails/batch', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + process.env.RESEND_API_KEY }, body: JSON.stringify(parte.map((x) => ({ from: process.env.MAIL_FROM, to: [x.to], subject: x.subject, html: x.html, headers: { 'List-Unsubscribe': '<' + exports.bajaUrl(x.to) + '>' } }))) });
+      if (r.ok) ok += parte.length; else mal += parte.length;
+    } catch (e) { mal += parte.length; }
+  }
+  return { enviados: ok, fallidos: mal };
+};
