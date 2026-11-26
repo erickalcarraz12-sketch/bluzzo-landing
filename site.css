@@ -35,7 +35,7 @@ a{color:inherit;text-decoration:none}
 @media (max-width:720px){.nav .links a:not(.btn){display:none}}
 
 /* hero */
-.hero{position:relative;color:#fff;padding:calc(88px + 28px) 0 72px;overflow:hidden;min-height:min(100svh,920px);display:flex;align-items:center}
+.hero{position:relative;color:#fff;padding:calc(88px + 28px) 0 72px;overflow:hidden;min-height:min(111svh,1022px);display:flex;align-items:center}
 .hero .grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,1fr);gap:clamp(16px,3vw,48px);align-items:center;width:100%}
 .hero h1{margin:0;font-size:clamp(60px,8.6vw,124px)}
 .hero h1 .ln{display:block;white-space:nowrap;overflow:hidden;padding:0 .08em .06em 0;margin-bottom:-.06em}
@@ -270,3 +270,4 @@ html,body{overflow-x:clip}
 .fsub input{flex:1 1 220px;min-width:0;padding:15px 20px;border-radius:999px;border:1.5px solid rgba(255,255,255,.55);background:rgba(255,255,255,.08);color:#fff;font:inherit;font-size:16px}
 .fsub input::placeholder{color:rgba(255,255,255,.6)}.fsub input:focus{outline:2px solid #fff;outline-offset:2px}
 .fsub .submsg{margin:10px 0 0;min-height:1.4em;font-size:14px}
+html{zoom:.9}

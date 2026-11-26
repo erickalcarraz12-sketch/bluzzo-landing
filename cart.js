@@ -84,7 +84,7 @@
       fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:tk.id,email:tk.email||f.email,qty:qty,zona:zona,codigo:cod?cod.codigo:'',cliente:f})})
       .then(function(r){return r.json().catch(function(){return{}}).then(function(d){return{ok:r.ok,d:d}})})
       .then(function(x){
-        if(x.ok&&x.d.ok){var r=x.d;qty=0;cod=null;save();render();close();location.href='/gracias?ref='+encodeURIComponent(r.ref)+'&n='+r.cantidad+'&t='+encodeURIComponent(r.total);return}
+        if(x.ok&&x.d.ok){var r=x.d;qty=0;cod=null;save();render();close();location.href='/gracias?ref='+encodeURIComponent(r.ref)+'&n='+r.cantidad+'&t='+encodeURIComponent(r.total)+'&b='+encodeURIComponent(r.b||'');return}
         resetBtn();
         if(x.d&&x.d.error==='pago_no_configurado'){fallback(f);return}
         if(x.d&&x.d.error==='agotado'){msg((x.d.mensaje||'Este drop se agotó.')+' Déjanos tu correo y te avisamos del próximo.');setTimeout(function(){close();if($('#espera'))$('#espera').scrollIntoView({behavior:'smooth',block:'center'});else location.href='/notebook#espera'},1400);return}
@@ -112,7 +112,7 @@
     d.querySelector('button').onclick=function(){d.remove()};
   }
   document.addEventListener('click',function(ev){
-    var t=ev.target.closest('[data-cart-open],[data-cart-close],[data-q],[data-pq],[data-pack],[data-add],#cartPay,#cartWA,#codeBtn');if(!t)return;
+    var t=ev.target.closest('[data-cart-open],[data-cart-close],[data-q],[data-pq],[data-pack],[data-add],#cartPay,#codeBtn');if(!t)return;
     if(t.hasAttribute('data-cart-open')){ev.preventDefault();open()}
     else if(t.hasAttribute('data-cart-close')){close()}
     else if(t.hasAttribute('data-q')){setQty(qty+parseInt(t.getAttribute('data-q'),10))}
@@ -121,7 +121,6 @@
     else if(t.hasAttribute('data-add')){var n=t.getAttribute('data-add')==='picker'?picker:1;setQty(Math.min(CFG.maxPorPedido,qty+n));if(window.bzTrack)bzTrack('AddToCart',{content_name:CFG.producto,currency:'PEN',value:sub(n),num_items:n});open()}
     else if(t.id==='cartPay'){pay()}
     else if(t.id==='codeBtn'){applyCode()}
-    else if(t.id==='cartWA'){var f=data();toWA(f)}
   });
   document.addEventListener('change',function(ev){if(ev.target.name==='zona'){zona=ev.target.value;save();render()}});
   document.addEventListener('keydown',function(ev){if(ev.key==='Escape')close();if(ev.key==='Enter'&&ev.target.id==='codeIn'){ev.preventDefault();applyCode()}});

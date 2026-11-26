@@ -35,6 +35,7 @@ exports.confirmacionPedido = (p) => {
 ${fila('Notebooks', esc(p.cantidad) + ' × ' + esc(cfg.producto))}${fila('Regalo', 'Bolígrafo de gel blanco por notebook')}${fila('Envío', esc(p.zona))}${p.descuento ? fila('Descuento', '− ' + money(p.descuento)) : ''}${fila('Total pagado', money(p.total))}${fila('Entrega estimada', esc(cfg.entrega))}</table>
 <p style="margin:18px 0 6px"><b>Datos de entrega</b></p>
 <p style="margin:0 0 18px;color:#2B3A66">${esc(p.nombre)} · ${esc(p.celular)}<br>${esc(p.direccion)}${p.ciudad ? ', ' + esc(p.ciudad) : ''}${prov ? '<br><i>Envío a provincia únicamente por la agencia Shalom.</i>' : ''}</p>
+<p style="margin:0 0 18px"><a href="${BASE}/api/boleta?ref=${encodeURIComponent(p.ref)}&t=${exports.firma('boleta:' + p.ref)}" style="color:#0038FF;font-weight:700">Descargar tu comprobante (PDF)</a></p>
 <p style="margin:0 0 18px">Te escribiremos por WhatsApp para confirmar tu dirección y avisarte cuando tu pedido esté listo para salir.</p>
 <a href="https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent('Hola, pagué mi Bluzzo. Referencia: ' + p.ref)}" style="display:inline-block;background:#0038FF;color:#fff;text-decoration:none;padding:12px 22px;border-radius:99px;font-weight:700">Escribir por WhatsApp</a>`);
   return { subject: 'Tu reserva Bluzzo está confirmada · ' + p.ref, html };

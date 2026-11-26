@@ -97,7 +97,7 @@ module.exports = async (req, res) => {
         const m = mail.confirmacionPedido({ ref, nombre, celular: cel, direccion: dir, ciudad: txt(c.ciudad, 60), cantidad: qty, zona: zona.nombre, descuento, total });
         await mail.send({ to: email, subject: m.subject, html: m.html, bcc: process.env.MAIL_BCC });
       } catch (e) { /* ignorar */ }
-      return res.status(200).json({ ok: true, ref, id: d.id, total, descuento, cantidad: qty });
+      return res.status(200).json({ ok: true, ref, id: d.id, total, descuento, cantidad: qty, b: mail.firma('boleta:' + ref) });
     }
     // 3D Secure u otra acción adicional: aún no soportada en esta versión
     if (d && d.action_code) return res.status(402).json({ error: 'requiere_verificacion', mensaje: 'Tu banco pide una verificación adicional. Escríbenos por WhatsApp y te ayudamos.' });

@@ -1,6 +1,6 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/img/icon-192.png" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/img/apple-touch-icon.png"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>¡Gracias! · Bluzzo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500;600&family=Reenie+Beanie&display=swap" rel="stylesheet">
-<style>
+<style>html{zoom:.9}
 *{box-sizing:border-box}body{margin:0;min-height:100svh;background:#0038FF;color:#fff;font:17px/1.6 Inter,system-ui,sans-serif;display:grid;place-items:center;padding:24px;
 background-image:linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px);background-size:36px 36px}
 .c{max-width:560px;width:100%}.logo{height:34px;margin-bottom:28px}
@@ -28,14 +28,14 @@ h1{font:700 clamp(54px,12vw,96px)/.92 'Barlow Condensed',sans-serif;text-transfo
 <div class="card in"><b>Gana un notebook gratis</b><ol class="stp"><li>Sigue a <a href="https://www.instagram.com/bluzzo.pe/" target="_blank" rel="noopener"><strong>@bluzzo.pe</strong></a> en Instagram.</li><li>Sube una historia con tu Bluzzo y etiquétanos.</li><li>Cada mes sorteamos un notebook. <strong>Cada notebook que compraste es una oportunidad más.</strong></li></ol><a class="btn ig" href="https://www.instagram.com/bluzzo.pe/" target="_blank" rel="noopener">Abrir Instagram</a></div>
 <div class="card in"><b>Entérate primero</b><p style="margin:8px 0 12px">Deja tu correo y te avisamos de promociones y nuevos drops.</p><form id="subF" class="subf" novalidate><input id="subE" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" aria-label="Tu correo"><button type="submit" class="btn w2">Suscribirme</button></form><p id="subM" role="status" class="subm"></p></div>
 <p class="in" id="p">Guarda tu referencia. Te avisaremos cuando tu pedido esté en camino.</p>
-<div class="btns in"><a class="btn w" href="/">Volver al inicio</a></div>
+<div class="btns in"><a class="btn w" id="dl" href="#" hidden>Descargar comprobante (PDF)</a><a class="btn w" href="/">Volver al inicio</a></div>
 </div>
 <script src="/track.js" defer></script>
 <script>
 document.getElementById('subF').addEventListener('submit',function(e){e.preventDefault();var i=document.getElementById('subE'),m=document.getElementById('subM'),v=i.value.trim(),b=e.target.querySelector('button');if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){m.textContent='Escribe un correo válido.';return}b.disabled=true;m.textContent='Guardando…';fetch('/api/suscribir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({correo:v,origen:'gracias'})}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})}).then(function(x){b.disabled=false;if(x.ok){m.textContent='¡Listo! Ya estás en la lista.';i.value='';if(window.bzTrack)bzTrack('Lead',{})}else m.textContent=(x.d&&x.d.mensaje)||'No pudimos guardarlo.'}).catch(function(){b.disabled=false;m.textContent='No pudimos guardarlo. Inténtalo otra vez.'})});
 var q=new URLSearchParams(location.search),ref=q.get('ref')||'',n=q.get('n')||'',t=q.get('t')||'';
 function s(i,v){document.getElementById(i).textContent=v}
-s('ref',ref||'—');
+s('ref',ref||'—');var bb=q.get('b')||'';if(ref&&bb){var dl=document.getElementById('dl');dl.href='/api/boleta?ref='+encodeURIComponent(ref)+'&t='+encodeURIComponent(bb);dl.hidden=false}
 try{if(ref&&!sessionStorage.getItem('bz_p_'+ref)){sessionStorage.setItem('bz_p_'+ref,'1');var tv=Number(t)||0;(function w(i){if(window.bzTrack)bzTrack('Purchase',{value:tv,currency:'PEN',num_items:Number(n)||1},ref);else if(i<20)setTimeout(function(){w(i+1)},150)})(0)}}catch(e){}
 s('n',n||'—');s('t',t?'S/ '+Number(t).toFixed(2):'—');
 fetch('/api/config').then(function(r){if(!r.ok)throw 0;return r}).catch(function(){return fetch('/config.json')}).then(function(r){return r.json()}).then(function(c){
