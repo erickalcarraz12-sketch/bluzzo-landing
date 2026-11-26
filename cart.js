@@ -37,7 +37,7 @@
     foot.style.display='flex';
     var z='';Object.keys(CFG.envio).forEach(function(k){var e=CFG.envio[k];z+='<label class="zn'+(k===zona?' on':'')+'"><span><input type="radio" name="zona" value="'+k+'"'+(k===zona?' checked':'')+'>'+e.nombre+'</span><b>'+money(e.costo)+'</b></label>'});
     if(zona==='provincia')z+='<p class="zn-note">Envío a provincia únicamente por la agencia Shalom. En «Dirección de entrega» escribe la oficina de Shalom donde recogerás tu pedido.</p>';
-    var keep={};$$('#cartForm [name]').forEach(function(i){if(i.type!=='radio')keep[i.name]=i.value});
+    var keep={},kb=$('#cartForm [name="boletin"]');kb=kb&&kb.checked;$$('#cartForm [name]').forEach(function(i){if(i.type!=='radio'&&i.type!=='checkbox')keep[i.name]=i.value});
     body.innerHTML=
       '<div class="ln"><div class="th"></div><div class="in"><b>'+CFG.producto+'</b><small>Tapa dura azul · hojas lisas azul real'+(ahorro(qty)>0?'</small><small style="color:#0038FF;font-weight:600">'+(qty>=5&&CFG.precioPack5>0?'Pack de 5 por '+money(CFG.precioPack5):'Promo 2 por '+money(CFG.precioPar))+' · ahorras '+money(ahorro(qty)):'')+'</small><div style="margin-top:8px;display:flex;width:max-content" class="stp"><button type="button" data-q="-1" aria-label="Menos">−</button><span>'+qty+'</span><button type="button" data-q="1" aria-label="Más"'+(qty>=CFG.maxPorPedido?' disabled':'')+'>+</button></div><button class="lnr" type="button" data-q="-99">Quitar</button></div><div class="pr">'+money(sub(qty))+'</div></div>'+
       '<div class="ln" style="background:#EEF2FF;border-color:#EEF2FF"><div class="in"><b>Bolígrafo de gel blanco × '+qty+'</b><small>De regalo con tu notebook</small></div><div class="pr" style="color:#0038FF">Gratis</div></div>'+
@@ -47,8 +47,9 @@
       '<div class="g2"><label class="f">Celular / WhatsApp<input type="tel" name="celular" autocomplete="tel" inputmode="tel" required></label><label class="f">Correo<input type="email" name="email" autocomplete="email" required></label></div>'+
       '<label class="f">Dirección de entrega<input type="text" name="direccion" autocomplete="street-address" required></label>'+
       '<label class="f">Distrito y ciudad<input type="text" name="ciudad" autocomplete="address-level2"></label>'+
-      '<label class="f">Notas (opcional)<textarea name="notas" rows="2"></textarea></label></fieldset></form>';
-    Object.keys(keep).forEach(function(n){var i=$('#cartForm [name="'+n+'"]');if(i)i.value=keep[n]});
+      '<label class="f">Notas (opcional)<textarea name="notas" rows="2"></textarea></label>'+
+      '<label class="chk"><input type="checkbox" name="boletin"><span>Quiero recibir novedades, nuevos drops y promociones de Bluzzo por correo. Puedo darme de baja cuando quiera.</span></label></fieldset></form>';
+    Object.keys(keep).forEach(function(n){var i=$('#cartForm [name="'+n+'"]');if(i)i.value=keep[n]});var nb=$('#cartForm [name="boletin"]');if(nb)nb.checked=!!kb;
     $('#tSub').textContent=money(sub(qty));$('#tEnv').textContent=money(shipCost());$('#tTot').textContent=money(total());
     var dr=$('#tDescRow');if(dr){dr.style.display=cod?'flex':'none';if(cod){$('#tDescL').textContent='Descuento ('+cod.codigo+')';$('#tDesc').textContent='− '+money(disc())}}
     var ci=$('#codeIn');if(ci&&cod){ci.value=cod.codigo}
@@ -61,7 +62,7 @@
   function open(){document.body.classList.add('cart-open');render()}
   function close(){document.body.classList.remove('cart-open')}
   function msg(t,ok){var m=$('#cartMsg');m.textContent=t||'';m.className='msg'+(ok?' ok':'')}
-  function data(){var f={};$$('#cartForm [name]').forEach(function(i){if(i.type!=='radio')f[i.name]=i.value.trim()});return f}
+  function data(){var f={};$$('#cartForm [name]').forEach(function(i){if(i.type==='checkbox')f[i.name]=i.checked?'1':'';else if(i.type!=='radio')f[i.name]=i.value.trim()});return f}
   function valid(f){if(!f.nombre)return 'Escribe tu nombre.';if((f.celular||'').replace(/\D/g,'').length<9)return 'Escribe un celular válido (9 dígitos).';if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email||''))return 'Escribe un correo válido para tu comprobante.';if(!f.direccion)return 'Escribe tu dirección de entrega.';return ''}
   function waText(f){var t=CFG.envio[zona],tot=total();
     return 'Hola, quiero separar mi Bluzzo.\n\n• '+qty+' × '+CFG.producto+' (bolígrafo blanco de regalo)\n• Envío: '+t.nombre+' ('+money(t.costo)+')\n• '+(cod?'Código '+cod.codigo+' (− '+money(disc())+')\n• ':'')+'Total: '+money(tot)+'\n\nNombre: '+(f.nombre||'')+'\nCelular: '+(f.celular||'')+'\nDirección: '+(f.direccion||'')+(f.ciudad?', '+f.ciudad:'')+(f.notas?'\nNotas: '+f.notas:'')}

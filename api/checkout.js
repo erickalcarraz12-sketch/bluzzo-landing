@@ -78,6 +78,13 @@ module.exports = async (req, res) => {
           if (codigo) { const cu = await db.q('bluzzo_codigos?select=usos&codigo=eq.' + encodeURIComponent(codigo)); if (cu && cu[0]) await db.q('bluzzo_codigos?codigo=eq.' + encodeURIComponent(codigo), { method: 'PATCH', prefer: 'return=minimal', body: { usos: cu[0].usos + 1 } }); }
         } catch (e) { /* el pago ya está hecho: queda registrado en Culqi con la misma referencia */ }
       }
+      if (db.ok() && String(c.boletin) === '1') { // suscripción marcada por el cliente en el formulario
+        try {
+          const nuevo = await db.q('bluzzo_suscriptores?on_conflict=correo', { method: 'POST', prefer: 'resolution=ignore-duplicates,return=representation', body: { correo: email.toLowerCase(), origen: 'compra' } });
+          await db.q('bluzzo_bajas?correo=eq.' + encodeURIComponent(email.toLowerCase()), { method: 'DELETE', prefer: 'return=minimal' }).catch(() => {});
+          if (nuevo && nuevo.length) { const bv = mail.bienvenida(email.toLowerCase()); await mail.send({ to: email, subject: bv.subject, html: bv.html }); }
+        } catch (e) { /* ignorar */ }
+      }
       try { // aviso de poco stock
         if (vend === null) throw new Error('sin dato');
         const antes = dr.cupos - vend, despues = antes - qty, um = Math.ceil(dr.cupos * 0.2);

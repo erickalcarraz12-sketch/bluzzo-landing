@@ -60,3 +60,5 @@ body.cart-open{overflow:hidden}
 .cod{display:flex;gap:8px}.cod input{flex:1;min-width:0;padding:10px 12px;border:1px solid #c9d5ff;border-radius:10px;font:inherit;text-transform:uppercase}.cod button{padding:0 16px;border:1px solid #0038FF;background:#fff;color:#0038FF;border-radius:10px;font:inherit;font-weight:600;cursor:pointer}
 .cm{font-size:13px;color:#c0152f;min-height:0}.cm.ok{color:#0a8a4a}.cm:empty{display:none}.tt.desc{color:#0a8a4a}
 .drw .bd>*{flex-shrink:0}.drw .bd{overflow-y:auto}
+
+.chk{display:flex;gap:10px;align-items:flex-start;margin-top:12px;font-size:13px;line-height:1.4;color:#2B3A66;cursor:pointer}.chk input{margin-top:3px;flex:none;width:18px;height:18px;accent-color:#0038FF}
