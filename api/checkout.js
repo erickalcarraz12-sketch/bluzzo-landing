@@ -28,10 +28,10 @@ module.exports = async (req, res) => {
 
   const subtotal = db.subtotalD(dr, qty);
   if (dr.pausado) return res.status(409).json({ error: 'agotado', mensaje: 'Las reservas están cerradas por ahora. Únete a la lista de espera.' });
-  let descuento = 0, codigo = '';
+  let descuento = 0, codigo = '', vend = null;
   if (db.ok()) {
     try {
-      const vend = await db.vendidos(dr.n);
+      vend = await db.vendidos(dr.n);
       if (vend + qty > dr.cupos) return res.status(409).json({ error: 'agotado', mensaje: 'Este drop se agotó. Únete a la lista de espera.' });
       const a = await db.aplicarCodigo(b.codigo, subtotal);
       if (!a.ok) return res.status(400).json({ error: 'codigo', mensaje: a.mensaje });
@@ -78,6 +78,12 @@ module.exports = async (req, res) => {
           if (codigo) { const cu = await db.q('bluzzo_codigos?select=usos&codigo=eq.' + encodeURIComponent(codigo)); if (cu && cu[0]) await db.q('bluzzo_codigos?codigo=eq.' + encodeURIComponent(codigo), { method: 'PATCH', prefer: 'return=minimal', body: { usos: cu[0].usos + 1 } }); }
         } catch (e) { /* el pago ya está hecho: queda registrado en Culqi con la misma referencia */ }
       }
+      try { // aviso de poco stock
+        if (vend === null) throw new Error('sin dato');
+        const antes = dr.cupos - vend, despues = antes - qty, um = Math.ceil(dr.cupos * 0.2);
+        if (despues <= 0) await require('./_push').notificar({ titulo: '🔴 Drop ' + dr.n + ' agotado', cuerpo: 'Se vendieron los ' + dr.cupos + ' cupos. Abre el siguiente drop.', url: '/admin', tag: 'stock' });
+        else if (antes > um && despues <= um) await require('./_push').notificar({ titulo: '🟠 Quedan ' + despues + ' cupos', cuerpo: 'El drop ' + dr.n + ' está por agotarse.', url: '/admin', tag: 'stock' });
+      } catch (e) { /* ignorar */ }
       try { await require('./_push').notificar({ titulo: '🛒 Nuevo pedido · S/ ' + total, cuerpo: nombre + ' · ' + qty + ' notebook' + (qty > 1 ? 's' : '') + ' · ' + zona.nombre, url: '/admin', tag: ref }); } catch (e) { /* ignorar */ }
       // correo de confirmación (si hay RESEND_API_KEY); nunca bloquea la respuesta de un pago ya hecho
       try {

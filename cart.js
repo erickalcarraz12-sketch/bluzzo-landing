@@ -16,6 +16,7 @@
     if(CFG.drop>1&&!/historia/.test(location.pathname)&&!window.__dn){window.__dn=1;var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n,L=[];while(n=w.nextNode()){if(/primer drop/i.test(n.nodeValue)&&!/SCRIPT|STYLE/.test(n.parentNode.nodeName))L.push(n)}L.forEach(function(n){n.nodeValue=n.nodeValue.replace(/Primer drop/g,'Drop '+CFG.drop).replace(/primer drop/g,'drop '+CFG.drop)})}
     $$('[data-par]').forEach(function(e){e.textContent=money(CFG.precioPar)});
     $$('[data-ahorro]').forEach(function(e){e.textContent=money(2*CFG.precio-CFG.precioPar)});
+    $$('script[type="application/ld+json"]').forEach(function(s){try{var j=JSON.parse(s.textContent);if(j['@type']==='Product'&&j.offers){j.offers.price=String(CFG.precio);s.textContent=JSON.stringify(j)}}catch(e){}});
     $$('[data-entrega]').forEach(function(e){e.textContent=CFG.entrega});
     $$('[data-envio-lima]').forEach(function(e){e.textContent=money(CFG.envio.lima.costo)});
     $$('[data-envio-prov]').forEach(function(e){e.textContent=money(CFG.envio.provincia.costo)});

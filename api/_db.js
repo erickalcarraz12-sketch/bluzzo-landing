@@ -57,3 +57,11 @@ exports.guardarDrop = async (o) => {
   _d = null;
 };
 exports.subtotalD = (d, qty) => Math.floor(qty / 2) * d.precioPar + (qty % 2) * d.precio;
+
+// Supabase Storage (bucket público "comunidad")
+exports.subirObjeto = async (bucket, ruta, buf, tipo) => {
+  const r = await fetch(cfg.supabaseUrl + '/storage/v1/object/' + bucket + '/' + ruta, { method: 'POST', headers: { apikey: key(), Authorization: 'Bearer ' + key(), 'Content-Type': tipo, 'x-upsert': 'true' }, body: buf });
+  if (!r.ok) throw new Error('storage');
+  return cfg.supabaseUrl + '/storage/v1/object/public/' + bucket + '/' + ruta;
+};
+exports.borrarObjeto = async (bucket, ruta) => { try { await fetch(cfg.supabaseUrl + '/storage/v1/object/' + bucket + '/' + ruta, { method: 'DELETE', headers: { apikey: key(), Authorization: 'Bearer ' + key() } }); } catch (e) { /* ignorar */ } };

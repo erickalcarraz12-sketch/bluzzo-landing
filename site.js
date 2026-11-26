@@ -58,6 +58,12 @@
       var ei=$('#espIn');if(ei){ei.placeholder='tucorreo@ejemplo.com';ei.type='email'}
       var bs=$('.bar');if(bs)bs.style.display='none'}
   }).catch(function(){})}
+  // comunidad: fotos subidas desde el panel (si no hay ninguna, la sección no se muestra)
+  var cm=$('#comunidad');
+  if(cm){fetch('/api/comunidad').then(function(r){return r.json()}).then(function(L){if(!L||!L.length)return;var g=$('#cgal');
+    L.forEach(function(x){var f=document.createElement('figure');var im=document.createElement('img');im.src=x.url;im.loading='lazy';im.alt='Bluzzo de '+(x.usuario?'@'+x.usuario:'la comunidad');f.appendChild(im);
+      if(x.usuario||x.texto){var c=document.createElement('figcaption');if(x.texto){var t=document.createElement('span');t.textContent=x.texto;c.appendChild(t)}if(x.usuario){var a=document.createElement('a');a.href='https://www.instagram.com/'+encodeURIComponent(x.usuario)+'/';a.target='_blank';a.rel='noopener';a.textContent='@'+x.usuario;c.appendChild(a)}f.appendChild(c)}
+      g.appendChild(f)});cm.hidden=false}).catch(function(){})}
   // prueba social: solo testimonios reales, cargados desde /testimonios.json (si está vacío, la sección no se muestra)
   var pr=$('#prueba');
   if(pr){fetch('/testimonios.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(a){

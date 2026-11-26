@@ -117,3 +117,8 @@
 .rhoja h2{margin:0 0 10px;font-size:clamp(40px,6vw,60px)}.rsm{font-size:13px;color:#51608F}
 @media(max-width:620px){#rcl .rg{grid-template-columns:1fr}#rcl fieldset{padding:18px}}
 @media print{.nav,.foot,.cartbtn,.ract,.phead,#cartDrawer,.cart,#rForm{display:none!important}.rcl{background:#fff!important}.rhoja{box-shadow:none;border:1px solid #999}}
+
+/* Comunidad */
+.comunidad h2{margin:0 0 10px;font-size:clamp(44px,5vw,72px);color:var(--marino)}.comunidad .lead{margin:0 0 26px;color:var(--marino)}
+.cgal{columns:3 260px;column-gap:16px}.cgal figure{margin:0 0 16px;break-inside:avoid;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 18px 40px -26px rgba(3,20,71,.5)}
+.cgal img{display:block;width:100%;height:auto}.cgal figcaption{padding:12px 16px;display:flex;flex-direction:column;gap:2px;color:var(--marino);font-size:14px}.cgal figcaption a{color:var(--azul);font-weight:600}

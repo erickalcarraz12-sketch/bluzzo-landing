@@ -24,5 +24,6 @@
     "nombre": "Bluzzo",
     "ruc": "",
     "direccion": "Lima, Perú"
-  }
+  },
+  "siteUrl": "https://bluzzo-toketap.vercel.app"
 }

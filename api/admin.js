@@ -8,19 +8,20 @@ module.exports = async (req, res) => {
   if (!igual(req.headers['x-admin-key'] || '', pw)) return res.status(401).json({ error: 'clave' });
   try {
     if (req.method === 'GET') {
-      const [pedidos, espera, codigos, subs, sorEst, sorteos, reclamos] = await Promise.all([
+      const [pedidos, espera, codigos, subs, sorEst, sorteos, reclamos, comunidad] = await Promise.all([
         db.q('bluzzo_pedidos?select=*&order=created_at.desc&limit=500'),
         db.q('bluzzo_espera?select=*&order=created_at.desc&limit=500'),
         db.q('bluzzo_codigos?select=*&order=created_at.desc'),
         db.q('bluzzo_suscriptores?select=*&order=created_at.desc&limit=1000').catch(() => []),
         db.q('bluzzo_sorteo_estado?select=*').catch(() => []),
         db.q('bluzzo_sorteos?select=*&order=created_at.desc&limit=100').catch(() => []),
-        db.q('bluzzo_reclamos?select=*&order=created_at.desc&limit=200').catch(() => [])
+        db.q('bluzzo_reclamos?select=*&order=created_at.desc&limit=200').catch(() => []),
+        db.q('bluzzo_comunidad?select=*&order=created_at.desc&limit=200').catch(() => [])
       ]);
       const dr = await db.drop();
       const vivos = pedidos.filter(p => p.estado !== 'cancelado' && (p.drop_n || 1) === dr.n);
       return res.status(200).json({
-        pedidos, espera, codigos, drop: dr, reclamos, suscriptores: subs, sorteo_estado: sorEst, sorteos,
+        pedidos, espera, codigos, drop: dr, reclamos, comunidad, suscriptores: subs, sorteo_estado: sorEst, sorteos,
         resumen: { pedidos: vivos.length, libros: vivos.reduce((a, p) => a + p.cantidad, 0), total: vivos.reduce((a, p) => a + Number(p.total), 0), cupos: dr.cupos }
       });
     }
@@ -65,6 +66,27 @@ module.exports = async (req, res) => {
       if (b.accion === 'reclamo_resp') {
         const estado = b.estado === 'respondido' ? 'respondido' : 'pendiente';
         await db.q('bluzzo_reclamos?id=eq.' + encodeURIComponent(db.txt(b.id, 50)), { method: 'PATCH', prefer: 'return=minimal', body: { estado, respuesta: db.txt(b.respuesta, 1500) || null, respondido_at: estado === 'respondido' ? new Date().toISOString() : null } });
+        return res.status(200).json({ ok: true });
+      }
+      if (b.accion === 'comunidad_subir') {
+        const m = /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(String(b.data || ''));
+        if (!m) return res.status(400).json({ error: 'imagen' });
+        const buf = Buffer.from(m[1], 'base64');
+        if (buf.length < 1000 || buf.length > 3000000) return res.status(400).json({ error: 'tamano' });
+        const id = crypto.randomUUID(), ruta = id + '.jpg';
+        const url = await db.subirObjeto('comunidad', ruta, buf, 'image/jpeg');
+        await db.q('bluzzo_comunidad', { method: 'POST', prefer: 'return=minimal', body: { id, url, ruta, usuario: db.txt(b.usuario, 40).replace(/^@/, ''), texto: db.txt(b.texto, 140) } });
+        return res.status(200).json({ ok: true });
+      }
+      if (b.accion === 'comunidad_visible') {
+        await db.q('bluzzo_comunidad?id=eq.' + encodeURIComponent(db.txt(b.id, 50)), { method: 'PATCH', prefer: 'return=minimal', body: { visible: !!b.visible } });
+        return res.status(200).json({ ok: true });
+      }
+      if (b.accion === 'comunidad_borrar') {
+        const id = encodeURIComponent(db.txt(b.id, 50));
+        const f = await db.q('bluzzo_comunidad?select=ruta&id=eq.' + id);
+        await db.q('bluzzo_comunidad?id=eq.' + id, { method: 'DELETE', prefer: 'return=minimal' });
+        if (f && f[0]) await db.borrarObjeto('comunidad', f[0].ruta);
         return res.status(200).json({ ok: true });
       }
       if (b.accion === 'codigo_activo') {
