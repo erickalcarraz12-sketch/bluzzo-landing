@@ -19,6 +19,7 @@ input,select,button{font:inherit;padding:9px 12px;border-radius:10px;border:1px 
 <div class="row" style="margin-bottom:12px"><input id="cc" placeholder="CÓDIGO" size="12"><select id="ct"><option value="porcentaje">% de descuento</option><option value="monto">S/ de descuento</option></select><input id="cv" type="number" placeholder="Valor" style="width:90px"><input id="cm" type="number" placeholder="Usos máx." style="width:100px"><button id="cadd">Crear</button></div>
 <div class="scroll"><table id="tc"></table></div></div>
 <div class="card"><h2>Lista de espera</h2><div class="scroll"><table id="te"></table></div></div>
+<div class="card"><h2>Suscriptores</h2><div class="scroll"><table id="ts"></table></div></div>
 </main></div>
 <script>
 var K=sessionStorage.getItem('bk')||'';
@@ -33,6 +34,7 @@ function load(){api('GET').then(function(d){
   var op=['pagado','enviado','entregado','cancelado'].map(function(e){return '<option'+(e===p.estado?' selected':'')+'>'+e+'</option>'}).join('');
   return '<tr><td>'+f(p.created_at)+'</td><td>'+esc(p.ref)+'</td><td><b>'+esc(p.nombre)+'</b><br><a href="'+wa(p.celular,'Hola '+p.nombre+', te escribo por tu pedido Bluzzo '+p.ref)+'" target="_blank">'+esc(p.celular)+'</a><br>'+esc(p.email)+'</td><td>'+esc(p.zona)+'<br>'+esc(p.direccion)+', '+esc(p.ciudad)+(p.notas?'<br><i>'+esc(p.notas)+'</i>':'')+'</td><td>'+p.cantidad+(p.codigo?'<br><span class="tag">'+esc(p.codigo)+'</span>':'')+'</td><td>S/ '+Number(p.total).toFixed(2)+'</td><td><select data-id="'+p.id+'">'+op+'</select></td></tr>'}).join('')||'<tr><td colspan="7">Aún no hay pedidos.</td></tr>');
  document.getElementById('tc').innerHTML='<tr><th>Código</th><th>Descuento</th><th>Usos</th><th></th></tr>'+d.codigos.map(function(c){return '<tr><td><b>'+esc(c.codigo)+'</b></td><td>'+(c.tipo==='porcentaje'?c.valor+'%':'S/ '+c.valor)+'</td><td>'+c.usos+(c.max_usos?' / '+c.max_usos:'')+'</td><td><button class="g" data-c="'+esc(c.codigo)+'" data-a="'+(c.activo?0:1)+'">'+(c.activo?'Desactivar':'Activar')+'</button></td></tr>'}).join('');
+ document.getElementById('ts').innerHTML='<tr><th>Fecha</th><th>Correo</th><th>Desde</th></tr>'+((d.suscriptores||[]).map(function(e){return '<tr><td>'+f(e.created_at)+'</td><td>'+esc(e.correo)+'</td><td>'+esc(e.origen||'')+'</td></tr>'}).join('')||'<tr><td colspan="3">Sin suscriptores aún.</td></tr>');
  document.getElementById('te').innerHTML='<tr><th>Fecha</th><th>Contacto</th></tr>'+(d.espera.map(function(e){return '<tr><td>'+f(e.created_at)+'</td><td>'+(e.tipo==='whatsapp'?'<a href="'+wa(e.contacto)+'" target="_blank">'+esc(e.contacto)+'</a>':esc(e.contacto))+' <span class="tag">'+e.tipo+'</span></td></tr>'}).join('')||'<tr><td colspan="2">Nadie en espera.</td></tr>');
 }).catch(function(e){document.getElementById('login').hidden=false;document.getElementById('app').hidden=true;document.getElementById('le').textContent=e.message==='clave'?'Clave incorrecta.':'El panel aún no está configurado.'})}
 document.getElementById('go').onclick=function(){K=document.getElementById('pw').value;sessionStorage.setItem('bk',K);load()};

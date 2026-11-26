@@ -8,14 +8,15 @@ module.exports = async (req, res) => {
   if (!igual(req.headers['x-admin-key'] || '', pw)) return res.status(401).json({ error: 'clave' });
   try {
     if (req.method === 'GET') {
-      const [pedidos, espera, codigos] = await Promise.all([
+      const [pedidos, espera, codigos, subs] = await Promise.all([
         db.q('bluzzo_pedidos?select=*&order=created_at.desc&limit=500'),
         db.q('bluzzo_espera?select=*&order=created_at.desc&limit=500'),
-        db.q('bluzzo_codigos?select=*&order=created_at.desc')
+        db.q('bluzzo_codigos?select=*&order=created_at.desc'),
+        db.q('bluzzo_suscriptores?select=*&order=created_at.desc&limit=1000').catch(() => [])
       ]);
       const vivos = pedidos.filter(p => p.estado !== 'cancelado');
       return res.status(200).json({
-        pedidos, espera, codigos,
+        pedidos, espera, codigos, suscriptores: subs,
         resumen: { pedidos: vivos.length, libros: vivos.reduce((a, p) => a + p.cantidad, 0), total: vivos.reduce((a, p) => a + Number(p.total), 0), cupos: cfg.cuposTotal }
       });
     }

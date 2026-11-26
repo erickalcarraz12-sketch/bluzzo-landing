@@ -74,6 +74,15 @@
     fetch('/api/espera',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contacto:v})}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})}).then(function(x){
       b.disabled=false;if(x.ok&&x.d.ok){m.className='ok';m.textContent='¡Listo! Te avisaremos del próximo drop.';i.value=''}else{m.className='';m.textContent=(x.d&&x.d.mensaje)||'No pudimos guardarlo. Escríbenos por WhatsApp.'}
     }).catch(function(){b.disabled=false;m.className='';m.textContent='No pudimos guardarlo. Inténtalo otra vez.'})})}
+
+  // suscripción al boletín (pie de página)
+  var sf=$('#subForm');
+  if(sf){sf.addEventListener('submit',function(e){e.preventDefault();var i=$('#subIn'),m=$('#subMsg'),b=sf.querySelector('button'),v=(i.value||'').trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)){m.textContent='Escribe un correo válido.';return}
+    b.disabled=true;m.textContent='Guardando…';
+    fetch('/api/suscribir',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({correo:v,origen:location.pathname.slice(0,40)})}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d}})}).then(function(x){
+      b.disabled=false;if(x.ok){m.textContent='¡Listo! Ya estás en la lista.';i.value='';if(window.bzTrack)bzTrack('Lead',{})}else m.textContent=(x.d&&x.d.mensaje)||'No pudimos guardarlo. Inténtalo otra vez.'
+    }).catch(function(){b.disabled=false;m.textContent='No pudimos guardarlo. Inténtalo otra vez.'})})}
   // el carrito "responde" al agregar
   var cb=$('.cartbtn');
   if(cb){new MutationObserver(function(){cb.classList.remove('bump');void cb.offsetWidth;cb.classList.add('bump')}).observe($('.cnt',cb),{childList:true,characterData:true,subtree:true})}

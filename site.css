@@ -263,3 +263,10 @@ html,body{overflow-x:clip}
 .sorteo-in{max-width:720px}
 .sorteo .lead{color:var(--marino);margin:0 0 18px}
 .sorteo-l{margin:0 0 24px;padding-left:20px;color:var(--marino);line-height:1.7}
+
+.fsub{padding:8px 0 4px}.fsub b{font-size:clamp(28px,3vw,40px);display:block;margin-bottom:6px}
+.fsub p{margin:0 0 14px;color:#E8EEFF;max-width:34em}
+.fsub form{display:flex;gap:10px;flex-wrap:wrap;max-width:480px}
+.fsub input{flex:1 1 220px;min-width:0;padding:15px 20px;border-radius:999px;border:1.5px solid rgba(255,255,255,.55);background:rgba(255,255,255,.08);color:#fff;font:inherit;font-size:16px}
+.fsub input::placeholder{color:rgba(255,255,255,.6)}.fsub input:focus{outline:2px solid #fff;outline-offset:2px}
+.fsub .submsg{margin:10px 0 0;min-height:1.4em;font-size:14px}
