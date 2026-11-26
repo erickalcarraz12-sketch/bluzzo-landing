@@ -241,3 +241,15 @@ html,body{overflow-x:clip}
 .nav .in{height:88px}
 .nav.solid .in{height:68px}.nav.solid .navlogo{height:44px}
 @media (max-width:720px){.navlogo{height:42px}.nav .in{height:72px}.nav.solid .in{height:60px}.nav.solid .navlogo{height:36px}}
+
+/* prueba social */
+.prueba h2{margin:0 0 28px;font-size:clamp(44px,5vw,72px);color:var(--marino)}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.tcard{margin:0;background:#fff;border-radius:20px;padding:26px;box-shadow:0 20px 44px -28px rgba(3,20,71,.35)}
+.tcard blockquote{margin:0 0 16px;font-size:18px;line-height:1.6;color:var(--marino)}
+.tcard blockquote::before{content:"“";display:block;font:700 54px/0.6 'Barlow Condensed',sans-serif;color:var(--azul);margin-bottom:6px}
+.tcard figcaption{font-weight:600;font-size:14px;color:var(--azul)}
+/* primer drop agotado: la lista de espera pasa a primer plano */
+.agotado .pcard,.agotado .pagos,.agotado .bar{display:none!important}
+.agotado .espera{background:#fff;padding:24px;border-radius:20px;box-shadow:0 24px 50px -30px rgba(3,20,71,.4);max-width:34em}
+.agotado .espera label{font-size:18px}

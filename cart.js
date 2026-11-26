@@ -1,6 +1,6 @@
 (function(){
   var CFG={producto:'Bluzzo Blueprint Notebook A5',precio:79,precioPar:145,maxPorPedido:5,
-    envio:{lima:{nombre:'Lima Metropolitana',costo:10},provincia:{nombre:'Provincias (agencia)',costo:18}},
+    envio:{lima:{nombre:'Lima Metropolitana',costo:10},provincia:{nombre:'Provincias (agencia Shalom)',costo:18}},
     entrega:'mediados de enero de 2027',whatsapp:'51926410751',culqiPublicKey:''};
   var KEY='bluzzo_cart_v1',qty=0,zona='lima',busy=false,cod=null;
   var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
@@ -28,6 +28,7 @@
     if(!qty){body.innerHTML='<div class="empty"><div class="disp" style="font-size:28px;color:#0038FF;font-weight:700">Tu carrito está vacío</div><p>Agrega tu Bluzzo y recibe un bolígrafo blanco de regalo.</p><a href="#reserva" class="btn" style="background:#0038FF;color:#fff" data-cart-close>Ver el notebook</a></div>';foot.style.display='none';return}
     foot.style.display='flex';
     var z='';Object.keys(CFG.envio).forEach(function(k){var e=CFG.envio[k];z+='<label class="zn'+(k===zona?' on':'')+'"><span><input type="radio" name="zona" value="'+k+'"'+(k===zona?' checked':'')+'>'+e.nombre+'</span><b>'+money(e.costo)+'</b></label>'});
+    if(zona==='provincia')z+='<p class="zn-note">Envío a provincia únicamente por la agencia Shalom. En «Dirección de entrega» escribe la oficina de Shalom donde recogerás tu pedido.</p>';
     var keep={};$$('#cartForm [name]').forEach(function(i){if(i.type!=='radio')keep[i.name]=i.value});
     body.innerHTML=
       '<div class="ln"><div class="th"></div><div class="in"><b>'+CFG.producto+'</b><small>Tapa dura azul · hojas lisas azul real'+(ahorro(qty)>0?'</small><small style="color:#0038FF;font-weight:600">Promo 2 por '+money(CFG.precioPar)+' · ahorras '+money(ahorro(qty)):'')+'</small><div style="margin-top:8px;display:flex;width:max-content" class="stp"><button type="button" data-q="-1" aria-label="Menos">−</button><span>'+qty+'</span><button type="button" data-q="1" aria-label="Más"'+(qty>=CFG.maxPorPedido?' disabled':'')+'>+</button></div><button class="lnr" type="button" data-q="-99">Quitar</button></div><div class="pr">'+money(sub(qty))+'</div></div>'+
@@ -77,6 +78,7 @@
         if(x.ok&&x.d.ok){var r=x.d;qty=0;cod=null;save();render();close();location.href='/gracias?ref='+encodeURIComponent(r.ref)+'&n='+r.cantidad+'&t='+encodeURIComponent(r.total);return}
         resetBtn();
         if(x.d&&x.d.error==='pago_no_configurado'){fallback(f);return}
+        if(x.d&&x.d.error==='agotado'){msg((x.d.mensaje||'El primer drop se agotó.')+' Déjanos tu correo y te avisamos del próximo.');setTimeout(function(){close();if($('#espera'))$('#espera').scrollIntoView({behavior:'smooth',block:'center'});else location.href='/notebook#espera'},1400);return}
         msg((x.d&&x.d.mensaje)||'No pudimos procesar el pago. Revisa tus datos o escríbenos por WhatsApp.')})
       .catch(function(){resetBtn();msg('No pudimos confirmar el pago. Si te cobraron, escríbenos por WhatsApp.')});
     }else if(Culqi.error){
@@ -86,7 +88,7 @@
   function pay(){
     if(busy||!qty)return;var f=data(),e=valid(f);if(e){msg(e);return}
     if(!CFG.culqiPublicKey){fallback(f);return}
-    busy=true;var b=$('#cartPay');b.disabled=true;b.textContent='Abriendo pago…';msg('');pending=f;
+    if(window.bzTrack)bzTrack('InitiateCheckout',{currency:'PEN',value:total(),num_items:qty});busy=true;var b=$('#cartPay');b.disabled=true;b.textContent='Abriendo pago…';msg('');pending=f;
     loadCulqi(function(err){
       if(err||!window.Culqi){resetBtn();msg('No se pudo cargar la ventana de pago de Culqi. Si usas Brave u otro bloqueador, desactívalo para este sitio y vuelve a intentar, o usa «Prefiero coordinar por WhatsApp».');return}
       Culqi.publicKey=CFG.culqiPublicKey;
@@ -106,7 +108,7 @@
     else if(t.hasAttribute('data-cart-close')){close()}
     else if(t.hasAttribute('data-q')){setQty(qty+parseInt(t.getAttribute('data-q'),10))}
     else if(t.hasAttribute('data-pq')){picker=Math.max(1,Math.min(CFG.maxPorPedido,picker+parseInt(t.getAttribute('data-pq'),10)));render()}
-    else if(t.hasAttribute('data-add')){var n=t.getAttribute('data-add')==='picker'?picker:1;setQty(Math.min(CFG.maxPorPedido,qty+n));open()}
+    else if(t.hasAttribute('data-add')){var n=t.getAttribute('data-add')==='picker'?picker:1;setQty(Math.min(CFG.maxPorPedido,qty+n));if(window.bzTrack)bzTrack('AddToCart',{content_name:CFG.producto,currency:'PEN',value:sub(n),num_items:n});open()}
     else if(t.id==='cartPay'){pay()}
     else if(t.id==='codeBtn'){applyCode()}
     else if(t.id==='cartWA'){var f=data();toWA(f)}

@@ -2,6 +2,7 @@
 // Variable de entorno en Vercel: CULQI_SECRET_KEY (sk_test_... para probar, sk_live_... para cobrar de verdad).
 const cfg = require('../config.json');
 const db = require('./_db');
+const mail = require('./_mail');
 
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -75,6 +76,11 @@ module.exports = async (req, res) => {
           if (codigo) { const cu = await db.q('bluzzo_codigos?select=usos&codigo=eq.' + encodeURIComponent(codigo)); if (cu && cu[0]) await db.q('bluzzo_codigos?codigo=eq.' + encodeURIComponent(codigo), { method: 'PATCH', prefer: 'return=minimal', body: { usos: cu[0].usos + 1 } }); }
         } catch (e) { /* el pago ya está hecho: queda registrado en Culqi con la misma referencia */ }
       }
+      // correo de confirmación (si hay RESEND_API_KEY); nunca bloquea la respuesta de un pago ya hecho
+      try {
+        const m = mail.confirmacionPedido({ ref, nombre, celular: cel, direccion: dir, ciudad: txt(c.ciudad, 60), cantidad: qty, zona: zona.nombre, descuento, total });
+        await mail.send({ to: email, subject: m.subject, html: m.html, bcc: process.env.MAIL_BCC });
+      } catch (e) { /* ignorar */ }
       return res.status(200).json({ ok: true, ref, id: d.id, total, descuento, cantidad: qty });
     }
     // 3D Secure u otra acción adicional: aún no soportada en esta versión

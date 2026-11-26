@@ -27,10 +27,13 @@ h1{font:700 clamp(54px,12vw,96px)/.92 'Barlow Condensed',sans-serif;text-transfo
 <p class="in" id="p">Guarda tu referencia. Escríbenos por WhatsApp para confirmar tu dirección y recibir novedades de tu pedido.</p>
 <div class="btns in"><a class="btn w" id="wa" target="_blank" rel="noopener">Avisar por WhatsApp</a><button class="btn o" id="sh" type="button">Compartir Bluzzo</button><a class="btn o" href="/">Volver al inicio</a></div>
 </div>
+<script src="/track.js" defer></script>
 <script>
 var q=new URLSearchParams(location.search),ref=q.get('ref')||'',n=q.get('n')||'',t=q.get('t')||'';
 function s(i,v){document.getElementById(i).textContent=v}
-s('ref',ref||'—');s('n',n||'—');s('t',t?'S/ '+Number(t).toFixed(2):'—');
+s('ref',ref||'—');
+try{if(ref&&!sessionStorage.getItem('bz_p_'+ref)){sessionStorage.setItem('bz_p_'+ref,'1');var tv=Number(t)||0;(function w(i){if(window.bzTrack)bzTrack('Purchase',{value:tv,currency:'PEN',num_items:Number(n)||1},ref);else if(i<20)setTimeout(function(){w(i+1)},150)})(0)}}catch(e){}
+s('n',n||'—');s('t',t?'S/ '+Number(t).toFixed(2):'—');
 fetch('/config.json').then(function(r){return r.json()}).then(function(c){
  s('e',c.entrega);
  document.getElementById('wa').href='https://wa.me/'+c.whatsapp+'?text='+encodeURIComponent('Hola, acabo de pagar mi Bluzzo. Referencia: '+ref+(n?' · '+n+' notebook(s)':'')+'. Quedo atento(a) a la coordinación de la entrega.');

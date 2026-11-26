@@ -1,5 +1,6 @@
 // Lista de espera por correo o WhatsApp
 const db = require('./_db');
+const mail = require('./_mail');
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   if (req.method !== 'POST') return res.status(405).json({ error: 'method' });
@@ -13,6 +14,7 @@ module.exports = async (req, res) => {
   if (esWa) c = num;
   try {
     await db.q('bluzzo_espera?on_conflict=contacto', { method: 'POST', prefer: 'resolution=ignore-duplicates,return=minimal', body: { contacto: c.toLowerCase(), tipo: esMail ? 'correo' : 'whatsapp' } });
+    if (esMail) { try { const m = mail.confirmacionEspera(); await mail.send({ to: c.toLowerCase(), subject: m.subject, html: m.html }); } catch (e) { /* ignorar */ } }
     res.status(200).json({ ok: true });
   } catch (e) { res.status(500).json({ error: 'db' }); }
 };

@@ -50,7 +50,22 @@
     $('#cupTxt').textContent=T[d.nivel]||T.abierto;cp.hidden=false;
     cp.classList.toggle('ult',d.nivel==='ultimos');cp.classList.toggle('ago',d.nivel==='agotado');
     requestAnimationFrame(function(){$('#cupBar').style.width=(d.nivel==='agotado'?100:d.barra)+'%'});
-    if(d.nivel==='agotado'){var pr=$('#prow');if(pr)pr.style.display='none';$$('[data-add]').forEach(function(b){b.style.display='none'});var l=$('#espL');if(l)l.textContent='Se agotó el primer drop. Déjanos tu contacto y te avisamos primero.'}
+    if(d.nivel==='agotado'){var pr=$('#prow');if(pr)pr.style.display='none';$$('[data-add]').forEach(function(b){b.style.display='none'});
+      b.classList.add('agotado');
+      var h=$('.reserva h2');if(h)h.textContent='Primer drop agotado.';
+      var ld=$('.reserva p.lead');if(ld)ld.textContent='Gracias por llegar hasta aquí. Déjanos tu correo y te avisamos primero cuando abramos el próximo drop.';
+      var l=$('#espL');if(l)l.textContent='Tu correo para avisarte del próximo drop';
+      var ei=$('#espIn');if(ei){ei.placeholder='tucorreo@ejemplo.com';ei.type='email'}
+      var bs=$('.bar');if(bs)bs.style.display='none'}
+  }).catch(function(){})}
+  // prueba social: solo testimonios reales, cargados desde /testimonios.json (si está vacío, la sección no se muestra)
+  var pr=$('#prueba');
+  if(pr){fetch('/testimonios.json',{cache:'no-store'}).then(function(r){return r.json()}).then(function(a){
+    if(!Array.isArray(a)||!a.length)return;var g=$('#tgrid');
+    a.slice(0,6).forEach(function(t){if(!t||!t.texto)return;var f=d.createElement('figure');f.className='tcard';
+      var q=d.createElement('blockquote');q.textContent=t.texto;f.appendChild(q);
+      var c=d.createElement('figcaption');c.textContent=(t.nombre||'')+(t.detalle?' · '+t.detalle:'');f.appendChild(c);g.appendChild(f)});
+    if(g.children.length)pr.hidden=false;
   }).catch(function(){})}
   // lista de espera
   var ef=$('#espera');

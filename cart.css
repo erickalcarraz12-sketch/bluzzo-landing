@@ -15,6 +15,7 @@
 .stp span{min-width:34px;text-align:center;font-weight:700;color:#031447}
 .prow{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .prow .btn{flex:1 1 200px;border:0;cursor:pointer;font-family:inherit;text-align:center}
+.zn-note{margin:8px 0 0;font-size:13px;line-height:1.5;color:#2B3A66;background:#EEF2FF;border-radius:10px;padding:9px 12px}
 .pcard .sub{font-size:14px;color:#51608F}
 .ovl{position:fixed;inset:0;background:rgba(3,20,71,.55);z-index:60;opacity:0;pointer-events:none;transition:opacity .25s}
 .drw{position:fixed;top:0;right:0;bottom:0;width:min(460px,100vw);background:#fff;color:#031447;z-index:61;transform:translateX(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(3,20,71,.3)}

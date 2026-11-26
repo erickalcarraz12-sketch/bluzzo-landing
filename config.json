@@ -8,7 +8,7 @@
       "costo": 10
     },
     "provincia": {
-      "nombre": "Provincias (agencia)",
+      "nombre": "Provincias (agencia Shalom)",
       "costo": 18
     }
   },
@@ -17,5 +17,6 @@
   "culqiPublicKey": "pk_test_RO6jMnHkStpyFF5z",
   "supabaseUrl": "https://aqevmqkciboytdbmyzfj.supabase.co",
   "cuposTotal": 100,
-  "precioPar": 145
+  "precioPar": 145,
+  "metaPixelId": ""
 }
