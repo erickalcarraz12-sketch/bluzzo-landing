@@ -5,6 +5,7 @@
   var KEY='bluzzo_cart_v1',qty=0,zona='lima',busy=false,cod=null;
   var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
   function load(){try{var d=JSON.parse(localStorage.getItem(KEY)||'{}');qty=Math.max(0,Math.min(CFG.maxPorPedido,parseInt(d.qty,10)||0));if(CFG.envio[d.zona])zona=d.zona}catch(e){}}
+  function ck(n){var m=document.cookie.match(new RegExp('(?:^|; )'+n+'=([^;]*)'));return m?decodeURIComponent(m[1]):''}
   function save(){try{localStorage.setItem(KEY,JSON.stringify({qty:qty,zona:zona}))}catch(e){}}
   function money(n){return 'S/ '+(n%1?n.toFixed(2):n)}
   var picker=1;
@@ -81,7 +82,7 @@
     if(Culqi.token){
       var tk=Culqi.token,f=pending||data();
       msg('Confirmando tu pago…',true);try{Culqi.close()}catch(e){}
-      fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:tk.id,email:tk.email||f.email,qty:qty,zona:zona,codigo:cod?cod.codigo:'',cliente:f})})
+      fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:tk.id,email:tk.email||f.email,qty:qty,zona:zona,codigo:cod?cod.codigo:'',cliente:f,ck:(function(){try{return localStorage.getItem('bzc')==='1'?'1':'0'}catch(e){return'0'}})(),fbp:ck('_fbp'),fbc:ck('_fbc')})})
       .then(function(r){return r.json().catch(function(){return{}}).then(function(d){return{ok:r.ok,d:d}})})
       .then(function(x){
         if(x.ok&&x.d.ok){var r=x.d;qty=0;cod=null;save();render();close();location.href='/gracias?ref='+encodeURIComponent(r.ref)+'&n='+r.cantidad+'&t='+encodeURIComponent(r.total)+'&b='+encodeURIComponent(r.b||'');return}

@@ -85,6 +85,10 @@ module.exports = async (req, res) => {
           if (nuevo && nuevo.length) { const bv = mail.bienvenida(email.toLowerCase()); await mail.send({ to: email, subject: bv.subject, html: bv.html }); }
         } catch (e) { /* ignorar */ }
       }
+      if (b.ck === '1') { // API de Conversiones: solo si aceptó las cookies de medición
+        const ip = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+        await require('./_meta').compra({ ref, total, qty, email, nombre, celular: cel, ciudad: txt(c.ciudad, 60), ip, ua: txt(req.headers['user-agent'], 300), fbp: txt(b.fbp, 100), fbc: txt(b.fbc, 200) });
+      }
       try { // aviso de poco stock
         if (vend === null) throw new Error('sin dato');
         const antes = dr.cupos - vend, despues = antes - qty, um = Math.ceil(dr.cupos * 0.2);
