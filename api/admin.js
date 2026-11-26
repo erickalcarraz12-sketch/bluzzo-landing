@@ -57,10 +57,10 @@ module.exports = async (req, res) => {
       if (b.accion === 'drop_guardar' || b.accion === 'drop_nuevo') {
         const cur = await db.drop();
         const num = (v) => (Number.isFinite(Number(v)) && Number(v) > 0 ? Number(v) : null);
-        const cupos = parseInt(b.cupos, 10), precio = num(b.precio), par = num(b.precioPar), normal = num(b.precioNormal) || precio, max = parseInt(b.maxPorPedido, 10) || cur.maxPorPedido;
+        const cupos = parseInt(b.cupos, 10), precio = num(b.precio), par = num(b.precioPar), p5 = Number.isFinite(Number(b.precioPack5)) && Number(b.precioPack5) >= 0 ? Number(b.precioPack5) : 0, normal = num(b.precioNormal) || precio, max = parseInt(b.maxPorPedido, 10) || cur.maxPorPedido;
         if (!(cupos >= 1 && cupos <= 100000) || !precio || !par || !(max >= 1 && max <= 20)) return res.status(400).json({ error: 'datos' });
         const nuevo = b.accion === 'drop_nuevo';
-        await db.guardarDrop({ n: nuevo ? cur.n + 1 : cur.n, cupos, precio, precioPar: par, precioNormal: normal, maxPorPedido: max, entrega: db.txt(b.entrega, 60) || cur.entrega, pausado: nuevo ? false : !!b.pausado });
+        await db.guardarDrop({ n: nuevo ? cur.n + 1 : cur.n, cupos, precio, precioPar: par, precioPack5: p5, precioNormal: normal, maxPorPedido: max, entrega: db.txt(b.entrega, 60) || cur.entrega, pausado: nuevo ? false : !!b.pausado });
         return res.status(200).json({ ok: true });
       }
       if (b.accion === 'reclamo_resp') {

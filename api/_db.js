@@ -16,7 +16,7 @@ exports.q = async (path, opt = {}) => {
 };
 exports.body = (req) => { let b = req.body; if (typeof b === 'string') { try { b = JSON.parse(b); } catch (e) { b = {}; } } return b || {}; };
 // Subtotal con promo: cada par cuesta cfg.precioPar, el impar suelto cuesta cfg.precio
-exports.subtotal = (qty) => Math.floor(qty / 2) * (cfg.precioPar || cfg.precio * 2) + (qty % 2) * cfg.precio;
+exports.subtotal = (qty) => exports.subtotalD({ precio: cfg.precio, precioPar: cfg.precioPar || cfg.precio * 2, precioPack5: cfg.precioPack5 || 0 }, qty);
 exports.txt = (v, n) => String(v == null ? '' : v).trim().slice(0, n);
 
 // Cupos vendidos (sin cancelados)
@@ -48,7 +48,7 @@ exports.drop = async () => {
   try { if (key()) { const r = await exports.q('bluzzo_config?select=valor&clave=eq.drop'); if (r && r[0]) o = JSON.parse(r[0].valor) || {}; } } catch (e) { /* usa config.json */ }
   const precio = pos(o.precio) || cfg.precio;
   _d = { n: parseInt(o.n, 10) || 1, cupos: pos(o.cupos) || cfg.cuposTotal, precio, precioNormal: pos(o.precioNormal) || cfg.precioNormal || precio,
-    precioPar: pos(o.precioPar) || cfg.precioPar || precio * 2, entrega: o.entrega || cfg.entrega, maxPorPedido: pos(o.maxPorPedido) || cfg.maxPorPedido, pausado: !!o.pausado };
+    precioPar: pos(o.precioPar) || cfg.precioPar || precio * 2, precioPack5: o.precioPack5 === 0 ? 0 : (pos(o.precioPack5) || cfg.precioPack5 || 0), entrega: o.entrega || cfg.entrega, maxPorPedido: pos(o.maxPorPedido) || cfg.maxPorPedido, pausado: !!o.pausado };
   _dt = Date.now();
   return _d;
 };
@@ -56,7 +56,8 @@ exports.guardarDrop = async (o) => {
   await exports.q('bluzzo_config?on_conflict=clave', { method: 'POST', prefer: 'resolution=merge-duplicates,return=minimal', body: { clave: 'drop', valor: JSON.stringify(o) } });
   _d = null;
 };
-exports.subtotalD = (d, qty) => Math.floor(qty / 2) * d.precioPar + (qty % 2) * d.precio;
+// Packs: cada 5 = precioPack5 (si existe), luego cada 2 = precioPar, el suelto = precio
+exports.subtotalD = (d, qty) => { let r = qty, t = 0; if (d.precioPack5 > 0) { t += Math.floor(r / 5) * d.precioPack5; r %= 5; } return t + Math.floor(r / 2) * d.precioPar + (r % 2) * d.precio; };
 
 // Supabase Storage (bucket público "comunidad")
 exports.subirObjeto = async (bucket, ruta, buf, tipo) => {

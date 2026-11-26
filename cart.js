@@ -1,5 +1,5 @@
 (function(){
-  var CFG={producto:'Bluzzo Blueprint Notebook A5',precio:89,precioPar:165,precioNormal:110,maxPorPedido:5,
+  var CFG={producto:'Bluzzo Blueprint Notebook A5',precio:89,precioPar:165,precioPack5:395,precioNormal:110,maxPorPedido:5,
     envio:{lima:{nombre:'Lima Metropolitana',costo:10},provincia:{nombre:'Provincias (agencia Shalom)',costo:18}},
     entrega:'mediados de enero de 2027',whatsapp:'51926410751',culqiPublicKey:''};
   var KEY='bluzzo_cart_v1',qty=0,zona='lima',busy=false,cod=null;
@@ -8,13 +8,14 @@
   function save(){try{localStorage.setItem(KEY,JSON.stringify({qty:qty,zona:zona}))}catch(e){}}
   function money(n){return 'S/ '+(n%1?n.toFixed(2):n)}
   var picker=1;
-  function sub(q){return Math.floor(q/2)*(CFG.precioPar||CFG.precio*2)+(q%2)*CFG.precio}
+  function sub(q){var t=0,p5=CFG.precioPack5||0;if(p5>0){t+=Math.floor(q/5)*p5;q%=5}return t+Math.floor(q/2)*(CFG.precioPar||CFG.precio*2)+(q%2)*CFG.precio}
   function ahorro(q){return CFG.precio*q-sub(q)}
   function fillStatic(){
     $$('[data-price]').forEach(function(e){e.textContent=money(CFG.precio)});
     $$('[data-normal]').forEach(function(e){if(CFG.precioNormal&&CFG.precioNormal>CFG.precio){e.textContent=money(CFG.precioNormal);e.hidden=false}else{e.hidden=true;var pn=e.closest('.pnormal');if(pn)pn.hidden=true}});
     if(CFG.drop>1&&!/historia/.test(location.pathname)&&!window.__dn){window.__dn=1;var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT),n,L=[];while(n=w.nextNode()){if(/primer drop/i.test(n.nodeValue)&&!/SCRIPT|STYLE/.test(n.parentNode.nodeName))L.push(n)}L.forEach(function(n){n.nodeValue=n.nodeValue.replace(/Primer drop/g,'Drop '+CFG.drop).replace(/primer drop/g,'drop '+CFG.drop)})}
     $$('[data-par]').forEach(function(e){e.textContent=money(CFG.precioPar)});
+    var p5=CFG.precioPack5||0;$$('[data-pack5]').forEach(function(e){e.textContent=money(p5)});$$('[data-ahorro5]').forEach(function(e){e.textContent=money(5*CFG.precio-p5)});$$('.pack5').forEach(function(e){e.hidden=!(p5>0&&p5<5*CFG.precio)});
     $$('[data-ahorro]').forEach(function(e){e.textContent=money(2*CFG.precio-CFG.precioPar)});
     $$('script[type="application/ld+json"]').forEach(function(s){try{var j=JSON.parse(s.textContent);if(j['@type']==='Product'&&j.offers){j.offers.price=String(CFG.precio);s.textContent=JSON.stringify(j)}}catch(e){}});
     $$('[data-entrega]').forEach(function(e){e.textContent=CFG.entrega});
@@ -34,7 +35,7 @@
     if(zona==='provincia')z+='<p class="zn-note">Envío a provincia únicamente por la agencia Shalom. En «Dirección de entrega» escribe la oficina de Shalom donde recogerás tu pedido.</p>';
     var keep={};$$('#cartForm [name]').forEach(function(i){if(i.type!=='radio')keep[i.name]=i.value});
     body.innerHTML=
-      '<div class="ln"><div class="th"></div><div class="in"><b>'+CFG.producto+'</b><small>Tapa dura azul · hojas lisas azul real'+(ahorro(qty)>0?'</small><small style="color:#0038FF;font-weight:600">Promo 2 por '+money(CFG.precioPar)+' · ahorras '+money(ahorro(qty)):'')+'</small><div style="margin-top:8px;display:flex;width:max-content" class="stp"><button type="button" data-q="-1" aria-label="Menos">−</button><span>'+qty+'</span><button type="button" data-q="1" aria-label="Más"'+(qty>=CFG.maxPorPedido?' disabled':'')+'>+</button></div><button class="lnr" type="button" data-q="-99">Quitar</button></div><div class="pr">'+money(sub(qty))+'</div></div>'+
+      '<div class="ln"><div class="th"></div><div class="in"><b>'+CFG.producto+'</b><small>Tapa dura azul · hojas lisas azul real'+(ahorro(qty)>0?'</small><small style="color:#0038FF;font-weight:600">'+(qty>=5&&CFG.precioPack5>0?'Pack de 5 por '+money(CFG.precioPack5):'Promo 2 por '+money(CFG.precioPar))+' · ahorras '+money(ahorro(qty)):'')+'</small><div style="margin-top:8px;display:flex;width:max-content" class="stp"><button type="button" data-q="-1" aria-label="Menos">−</button><span>'+qty+'</span><button type="button" data-q="1" aria-label="Más"'+(qty>=CFG.maxPorPedido?' disabled':'')+'>+</button></div><button class="lnr" type="button" data-q="-99">Quitar</button></div><div class="pr">'+money(sub(qty))+'</div></div>'+
       '<div class="ln" style="background:#EEF2FF;border-color:#EEF2FF"><div class="in"><b>Bolígrafo de gel blanco × '+qty+'</b><small>De regalo con tu notebook</small></div><div class="pr" style="color:#0038FF">Gratis</div></div>'+
       '<form id="cartForm" novalidate><fieldset><legend>Envío</legend>'+z+'</fieldset>'+
       '<fieldset style="margin-top:18px"><legend>Tus datos</legend>'+
