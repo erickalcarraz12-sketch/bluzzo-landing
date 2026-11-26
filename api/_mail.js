@@ -54,7 +54,7 @@ const crypto = require('crypto');
 const BASE = (cfg.siteUrl || 'https://bluzzo-toketap.vercel.app').replace(/\/$/, '');
 const firma = (c) => crypto.createHmac('sha256', process.env.SUPABASE_SERVICE_KEY || 'x').update(String(c).toLowerCase()).digest('hex').slice(0, 32);
 exports.firma = firma;
-exports.bajaUrl = (c) => BASE + '/api/baja?c=' + encodeURIComponent(c) + '&t=' + firma(c);
+exports.bajaUrl = (c) => BASE + '/api/suscribir?c=' + encodeURIComponent(c) + '&t=' + firma(c);
 const pie = (c) => `<p style="text-align:center;font-size:12px;color:#51608F;margin:6px 0 0">Recibes este correo porque te suscribiste en Bluzzo. <a href="${exports.bajaUrl(c)}" style="color:#51608F">Darme de baja</a></p>`;
 
 exports.bienvenida = (c) => ({

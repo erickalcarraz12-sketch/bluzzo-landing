@@ -4,6 +4,7 @@ const db = require('./_db');
 const mail = require('./_mail');
 const firmaRes = (ref) => mail.firma('resena:' + ref);
 module.exports = async (req, res) => {
+  if (req.method === 'GET' && !(req.query && req.query.ref)) return (req.query && req.query.tipo === 'comunidad' ? require('./_comunidad') : require('./_resenas'))(req, res); // listas públicas
   res.setHeader('Cache-Control', 'no-store');
   if (!db.ok()) return res.status(501).json({ error: 'no_configurado' });
   const src = req.method === 'GET' ? (req.query || {}) : db.body(req);

@@ -2,6 +2,7 @@
 const db = require('./_db');
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
+  if (req.method === 'GET') return require('./_baja')(req, res); // enlace de baja del boletín
   if (req.method !== 'POST') return res.status(405).json({ error: 'method' });
   if (!db.ok()) return res.status(501).json({ error: 'no_configurado' });
   const b = db.body(req);
