@@ -258,3 +258,8 @@ html,body{overflow-x:clip}
 .pnormal{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;font-size:14px;color:#51608F;margin-top:-8px}
 .pnormal s{font:700 24px/1 'Barlow Condensed',sans-serif;color:#8C99C2;text-decoration-thickness:2px}
 .hero .precio s{font:700 22px/1 'Barlow Condensed',sans-serif;color:var(--cota);opacity:.8;text-decoration-thickness:2px}
+
+.sorteo h2{margin:0 0 14px;font-size:clamp(44px,5vw,72px);color:var(--marino)}
+.sorteo-in{max-width:720px}
+.sorteo .lead{color:var(--marino);margin:0 0 18px}
+.sorteo-l{margin:0 0 24px;padding-left:20px;color:var(--marino);line-height:1.7}
