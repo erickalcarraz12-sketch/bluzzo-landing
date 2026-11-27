@@ -1,7 +1,7 @@
 (function(){
   var CFG={producto:'Bluzzo Blueprint Notebook A5',precio:89,precioPar:165,precioPack5:395,precioNormal:110,maxPorPedido:5,
     envio:{lima:{nombre:'Lima Metropolitana',costo:10},provincia:{nombre:'Provincias (agencia Shalom)',costo:18}},
-    entrega:'mediados de enero de 2027',whatsapp:'51926410751',culqiPublicKey:''};
+    entrega:'mediados de enero de 2027',whatsapp:'51926410751',culqiPublicKey:'',comision:{pct:4.2,fijo:0.3,igv:18}};
   var KEY='bluzzo_cart_v1',qty=0,zona='lima',busy=false,cod=null;
   var $=function(s,r){return (r||document).querySelector(s)},$$=function(s,r){return [].slice.call((r||document).querySelectorAll(s))};
   function load(){try{var d=JSON.parse(localStorage.getItem(KEY)||'{}');qty=Math.max(0,Math.min(CFG.maxPorPedido,parseInt(d.qty,10)||0));if(CFG.envio[d.zona])zona=d.zona}catch(e){}}
@@ -25,7 +25,9 @@
   }
   function shipCost(){return CFG.envio[zona].costo}
   function disc(){if(!cod)return 0;var st=sub(qty),d=cod.tipo==='porcentaje'?st*cod.valor/100:cod.valor;return Math.min(Math.round(d*100)/100,st)}
-  function total(){return Math.round((sub(qty)-disc()+shipCost())*100)/100}
+  function base(){return Math.round((sub(qty)-disc()+shipCost())*100)/100}
+  function fee(){var c=CFG.comision;if(!c||!(c.pct>0))return 0;var k=1+(c.igv||0)/100,r=c.pct/100*k,f=(c.fijo||0)*k;return Math.ceil(((base()+f)/(1-r)-base())*100-1e-9)/100}
+  function total(){return Math.round((base()+fee())*100)/100}
   function render(){
     var cb=$('.cartbtn');if(cb){cb.classList.toggle('has',qty>0);$('.cnt',cb).textContent=qty}
     var pk=$('#packs');if(pk){
@@ -51,7 +53,7 @@
       '<label class="f">Notas (opcional)<textarea name="notas" rows="2"></textarea></label>'+
       '<label class="chk"><input type="checkbox" name="boletin"><span>Quiero recibir novedades, nuevos drops y promociones de Bluzzo por correo. Puedo darme de baja cuando quiera.</span></label></fieldset></form>';
     Object.keys(keep).forEach(function(n){var i=$('#cartForm [name="'+n+'"]');if(i)i.value=keep[n]});var nb=$('#cartForm [name="boletin"]');if(nb)nb.checked=!!kb;
-    $('#tSub').textContent=money(sub(qty));$('#tEnv').textContent=money(shipCost());$('#tTot').textContent=money(total());
+    $('#tSub').textContent=money(sub(qty));$('#tEnv').textContent=money(shipCost());var cr=$('#tComRow');if(cr){cr.style.display=fee()>0?'flex':'none';$('#tCom').textContent=money(fee())}$('#tTot').textContent=money(total());
     var dr=$('#tDescRow');if(dr){dr.style.display=cod?'flex':'none';if(cod){$('#tDescL').textContent='Descuento ('+cod.codigo+')';$('#tDesc').textContent='− '+money(disc())}}
     var ci=$('#codeIn');if(ci&&cod){ci.value=cod.codigo}
   }
@@ -66,7 +68,7 @@
   function data(){var f={};$$('#cartForm [name]').forEach(function(i){if(i.type==='checkbox')f[i.name]=i.checked?'1':'';else if(i.type!=='radio')f[i.name]=i.value.trim()});return f}
   function valid(f){if(!f.nombre)return 'Escribe tu nombre.';if((f.celular||'').replace(/\D/g,'').length<9)return 'Escribe un celular válido (9 dígitos).';if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(f.email||''))return 'Escribe un correo válido para tu comprobante.';if(!f.direccion)return 'Escribe tu dirección de entrega.';return ''}
   function waText(f){var t=CFG.envio[zona],tot=total();
-    return 'Hola, quiero separar mi Bluzzo.\n\n• '+qty+' × '+CFG.producto+' (bolígrafo blanco de regalo)\n• Envío: '+t.nombre+' ('+money(t.costo)+')\n• '+(cod?'Código '+cod.codigo+' (− '+money(disc())+')\n• ':'')+'Total: '+money(tot)+'\n\nNombre: '+(f.nombre||'')+'\nCelular: '+(f.celular||'')+'\nDirección: '+(f.direccion||'')+(f.ciudad?', '+f.ciudad:'')+(f.notas?'\nNotas: '+f.notas:'')}
+    return 'Hola, quiero separar mi Bluzzo.\n\n• '+qty+' × '+CFG.producto+' (bolígrafo blanco de regalo)\n• Envío: '+t.nombre+' ('+money(t.costo)+')\n• '+(cod?'Código '+cod.codigo+' (− '+money(disc())+')\n• ':'')+(fee()>0?'Cargo por pago en línea: '+money(fee())+'\n• ':'')+'Total: '+money(tot)+'\n\nNombre: '+(f.nombre||'')+'\nCelular: '+(f.celular||'')+'\nDirección: '+(f.direccion||'')+(f.ciudad?', '+f.ciudad:'')+(f.notas?'\nNotas: '+f.notas:'')}
   function toWA(f){window.open('https://wa.me/'+CFG.whatsapp+'?text='+encodeURIComponent(waText(f||data())),'_blank','noopener')}
   var culqiReady=false;
   function loadCulqi(cb){

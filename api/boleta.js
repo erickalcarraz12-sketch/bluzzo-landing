@@ -55,7 +55,8 @@ function pdf(p) {
     doc.text('CANT.', W - M - 190, y + 10, { width: 50, align: 'center', characterSpacing: 1 });
     doc.text('IMPORTE', W - M - 110, y + 10, { width: 96, align: 'right', characterSpacing: 1 });
     y += 40;
-    const sub = Number(p.total) - Number(p.envio) + Number(p.descuento);
+    const com = Number(p.comision) || 0;
+    const sub = Number(p.total) - Number(p.envio) + Number(p.descuento) - com;
     const fila = (a, b, c, d) => {
       doc.fillColor(MARINO).font('Helvetica-Bold').fontSize(11).text(a, M + 14, y, { width: W - 2 * M - 220 });
       const hh = doc.y;
@@ -68,6 +69,7 @@ function pdf(p) {
     fila('Bolígrafo de gel blanco', String(p.cantidad), 'Gratis', 'Regalo con tu notebook');
     if (Number(p.descuento) > 0) fila('Descuento' + (p.codigo ? ' (' + p.codigo + ')' : ''), '', '- ' + s(p.descuento));
     fila('Envío', '', s(p.envio), p.zona);
+    if (com > 0) fila('Cargo por pago en línea', '', s(com), 'Comisión de la pasarela de pagos');
 
     // Total
     y += 6;

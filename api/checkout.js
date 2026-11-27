@@ -3,6 +3,7 @@
 const cfg = require('../config.json');
 const db = require('./_db');
 const mail = require('./_mail');
+const fee = require('./_fee');
 
 module.exports = async (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
@@ -38,7 +39,9 @@ module.exports = async (req, res) => {
       descuento = a.descuento; codigo = a.codigo;
     } catch (e) { /* si la base falla no bloqueamos la venta */ }
   }
-  const total = subtotal - descuento + zona.costo;       // soles
+  const base = Math.round((subtotal - descuento + zona.costo) * 100) / 100;
+  const comision = fee.calc(base);                       // comisión de Culqi trasladada al cliente
+  const total = Math.round((base + comision) * 100) / 100; // soles
   const ref = 'BLZ-' + Date.now().toString(36).toUpperCase();
   const partes = nombre.split(/\s+/);
   const body = {
@@ -46,9 +49,9 @@ module.exports = async (req, res) => {
     currency_code: 'PEN',
     email,
     source_id: token,
-    description: (qty + ' × ' + cfg.producto + ' + envío').slice(0, 80),
+    description: (qty + ' × ' + cfg.producto + ' + envío y cargo').slice(0, 80),
     metadata: {
-      ref, cantidad: String(qty), envio: zona.nombre, codigo, descuento: String(descuento),
+      ref, cantidad: String(qty), envio: zona.nombre, comision: String(comision), codigo, descuento: String(descuento),
       nombre, celular: cel, direccion: dir,
       ciudad: txt(c.ciudad, 60), notas: txt(c.notas, 150)
     },
@@ -72,7 +75,7 @@ module.exports = async (req, res) => {
       if (db.ok()) {
         try {
           await db.q('bluzzo_pedidos', { method: 'POST', prefer: 'return=minimal', body: {
-            ref, cantidad: qty, precio_unit: dr.precio, drop_n: dr.n, descuento, envio: zona.costo, total, zona: zona.nombre,
+            ref, cantidad: qty, precio_unit: dr.precio, drop_n: dr.n, descuento, envio: zona.costo, comision, total, zona: zona.nombre,
             nombre, celular: cel, email, direccion: dir, ciudad: txt(c.ciudad, 60), notas: txt(c.notas, 150),
             codigo: codigo || null, culqi_id: d.id } });
           if (codigo) { const cu = await db.q('bluzzo_codigos?select=usos&codigo=eq.' + encodeURIComponent(codigo)); if (cu && cu[0]) await db.q('bluzzo_codigos?codigo=eq.' + encodeURIComponent(codigo), { method: 'PATCH', prefer: 'return=minimal', body: { usos: cu[0].usos + 1 } }); }
@@ -98,10 +101,10 @@ module.exports = async (req, res) => {
       try { await require('./_push').notificar({ titulo: '🛒 Nuevo pedido · S/ ' + total, cuerpo: nombre + ' · ' + qty + ' notebook' + (qty > 1 ? 's' : '') + ' · ' + zona.nombre, url: '/admin', tag: ref }); } catch (e) { /* ignorar */ }
       // correo de confirmación (si hay RESEND_API_KEY); nunca bloquea la respuesta de un pago ya hecho
       try {
-        const m = mail.confirmacionPedido({ ref, nombre, celular: cel, direccion: dir, ciudad: txt(c.ciudad, 60), cantidad: qty, zona: zona.nombre, descuento, total });
+        const m = mail.confirmacionPedido({ ref, nombre, celular: cel, direccion: dir, ciudad: txt(c.ciudad, 60), cantidad: qty, zona: zona.nombre, descuento, comision, total });
         await mail.send({ to: email, subject: m.subject, html: m.html, bcc: process.env.MAIL_BCC });
       } catch (e) { /* ignorar */ }
-      return res.status(200).json({ ok: true, ref, id: d.id, total, descuento, cantidad: qty, b: mail.firma('boleta:' + ref) });
+      return res.status(200).json({ ok: true, ref, id: d.id, total, comision, descuento, cantidad: qty, b: mail.firma('boleta:' + ref) });
     }
     // 3D Secure u otra acción adicional: aún no soportada en esta versión
     if (d && d.action_code) return res.status(402).json({ error: 'requiere_verificacion', mensaje: 'Tu banco pide una verificación adicional. Escríbenos por WhatsApp y te ayudamos.' });

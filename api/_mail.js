@@ -32,7 +32,7 @@ exports.confirmacionPedido = (p) => {
   const html = wrap(`<h2 style="margin:0 0 6px;font-size:24px">¡Pago recibido, ${esc((p.nombre || '').split(' ')[0])}!</h2>
 <p style="margin:0 0 18px">Tu notebook Bluzzo quedó reservado en el primer drop. Guarda este correo: tu referencia es <b>${esc(p.ref)}</b>.</p>
 <table style="width:100%;border-collapse:collapse;border-top:1px solid #E3E9FF;border-bottom:1px solid #E3E9FF">
-${fila('Notebooks', esc(p.cantidad) + ' × ' + esc(cfg.producto))}${fila('Regalo', 'Bolígrafo de gel blanco por notebook')}${fila('Envío', esc(p.zona))}${p.descuento ? fila('Descuento', '− ' + money(p.descuento)) : ''}${fila('Total pagado', money(p.total))}${fila('Entrega estimada', esc(cfg.entrega))}</table>
+${fila('Notebooks', esc(p.cantidad) + ' × ' + esc(cfg.producto))}${fila('Regalo', 'Bolígrafo de gel blanco por notebook')}${fila('Envío', esc(p.zona))}${p.descuento ? fila('Descuento', '− ' + money(p.descuento)) : ''}${p.comision > 0 ? fila('Cargo por pago en línea', money(p.comision)) : ''}${fila('Total pagado', money(p.total))}${fila('Entrega estimada', esc(cfg.entrega))}</table>
 <p style="margin:18px 0 6px"><b>Datos de entrega</b></p>
 <p style="margin:0 0 18px;color:#2B3A66">${esc(p.nombre)} · ${esc(p.celular)}<br>${esc(p.direccion)}${p.ciudad ? ', ' + esc(p.ciudad) : ''}${prov ? '<br><i>Envío a provincia únicamente por la agencia Shalom.</i>' : ''}</p>
 <p style="margin:0 0 18px"><a href="${BASE}/api/boleta?ref=${encodeURIComponent(p.ref)}&t=${exports.firma('boleta:' + p.ref)}" style="color:#0038FF;font-weight:700">Descargar tu comprobante (PDF)</a></p>
