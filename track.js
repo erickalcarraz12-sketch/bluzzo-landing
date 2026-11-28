@@ -1,6 +1,8 @@
 // Analítica: Vercel Web Analytics + Meta Pixel (se activa al poner "metaPixelId" en config.json).
 (function(){
   var q=[],fbOn=false;
+  // Modo "yo": entra una vez a cualquier página con ?yo=1 y este navegador deja de contarse (Vercel Analytics y Meta Pixel). Para volver a contarte: ?yo=0
+  try{var m=/[?&]yo=([01])/.exec(location.search);if(m){if(m[1]==='1')localStorage.setItem('bz-yo','1');else localStorage.removeItem('bz-yo')}if(localStorage.getItem('bz-yo')==='1'){window.bzTrack=function(){};return}}catch(e){}
   // Vercel Web Analytics (hay que activarlo una vez en el panel de Vercel: proyecto → Analytics → Enable)
   window.va=window.va||function(){(window.vaq=window.vaq||[]).push(arguments)};
   var s=document.createElement('script');s.defer=true;s.src='/_vercel/insights/script.js';document.head.appendChild(s);
