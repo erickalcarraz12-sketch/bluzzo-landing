@@ -1,5 +1,5 @@
 (function(){
-  var CFG={producto:'Bluzzo Blueprint Notebook A5',precio:89,precioPar:165,precioPack5:395,precioNormal:110,maxPorPedido:5,
+  var CFG={producto:'Bluzzo Blueprint Notebook A5',precio:99,precioPar:185,precioPack5:445,precioNormal:110,maxPorPedido:5,
     envio:{lima:{nombre:'Lima Metropolitana',costo:10},provincia:{nombre:'Provincias (agencia Shalom)',costo:18}},
     entrega:'mediados de enero de 2027',whatsapp:'51926410751',culqiPublicKey:'',comision:{pct:4.2,fijo:0.3,igv:18}};
   var KEY='bluzzo_cart_v1',qty=0,zona='lima',busy=false,cod=null;
